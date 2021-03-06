@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  IdAuthentication{?}, mmsystem, ShellAPI, Jpeg, PNGImage, Vcl.ExtCtrls;
+  IdAuthentication{?}, mmsystem, ShellAPI, Jpeg, PNGImage, Vcl.ExtCtrls, Config;
 
 type
 
@@ -60,6 +60,7 @@ var
   fTS : TFilesToSend;
   FileName : string;
   stashPic, mapPartPic : string;
+  cfg : TConfig;
 
 implementation
 uses SendFileToServer;
@@ -92,7 +93,7 @@ end;
 
 function TFilesToSend.Empty() : boolean;
 begin
-  if count > 0 then Exit(false) else Exit(true);  
+  if count > 0 then Exit(false) else Exit(true);
 end;
 
 
@@ -129,6 +130,10 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
 //ShellExecute(0,'open',PChar('steam://rungameid/252490'),nil,nil, SW_SHOWNORMAL);
+
+cfg := TConfig.Create;
+cfg.init;
+cfg.load;
 
 stashPic := 'stash_picture';
 mapPartPic := 'map_part_picture';

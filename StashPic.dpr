@@ -4,7 +4,8 @@ uses
   Vcl.Forms,
   Unit1 in 'Unit1.pas' {Form1},
   SendFileToServer in 'SendFileToServer.pas',
-  filesToSend in 'filesToSend.pas';
+  filesToSend in 'filesToSend.pas',
+  Config in 'Config.pas';
 
 {$R *.res}
 
