@@ -28,7 +28,7 @@ object Form1: TForm1
     Left = 40
     Top = 104
     Width = 505
-    Height = 465
+    Height = 377
     Lines.Strings = (
       'Memo1')
     TabOrder = 1
@@ -41,6 +41,15 @@ object Form1: TForm1
     Caption = 'Launch Rust and connect to Cobalt'
     TabOrder = 2
     OnClick = Button2Click
+  end
+  object storeImagesCheckbox: TCheckBox
+    Left = 40
+    Top = 496
+    Width = 97
+    Height = 17
+    Caption = 'Store images'
+    TabOrder = 3
+    OnClick = storeImagesCheckboxClick
   end
   object Timer1: TTimer
     Interval = 50

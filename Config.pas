@@ -6,6 +6,7 @@ uses Winapi.Windows, Registry, SysUtils;
 
 type
   TConfig = class(TObject)
+
     usi : string;
     storeImages : boolean;
     launchRustOnStartup : boolean;
@@ -15,6 +16,7 @@ type
     serverAddress : string;
 
     const key = 'Software\StashPic\';
+    picsFolder = '/pics';
     procedure save();
     procedure load();
     procedure init();

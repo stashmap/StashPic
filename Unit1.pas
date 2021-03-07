@@ -33,12 +33,14 @@ end;
     Memo1: TMemo;
     Timer1: TTimer;
     Button2: TButton;
+    storeImagesCheckbox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Timer1Timer(Sender: TObject);
     procedure SendPic();
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure storeImagesCheckboxClick(Sender: TObject);
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -58,7 +60,7 @@ const
 var
   Form1: TForm1;
   fTS : TFilesToSend;
-  FileName : string;
+  fileName, baseDir : string;
   stashPic, mapPartPic : string;
   cfg : TConfig;
 
@@ -105,6 +107,12 @@ a := TSendFileToServer.Create();
 end;
 
 
+procedure TForm1.storeImagesCheckboxClick(Sender: TObject);
+begin
+cfg.storeImages := storeImagesCheckbox.Checked;
+cfg.save;
+end;
+
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
 SendPic;
@@ -130,10 +138,14 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
 //ShellExecute(0,'open',PChar('steam://rungameid/252490'),nil,nil, SW_SHOWNORMAL);
-
 cfg := TConfig.Create;
 cfg.init;
 cfg.load;
+storeImagesCheckbox.Checked := cfg.storeImages;
+
+baseDir :=  ExtractFileDir(Application.ExeName);
+if (not DirectoryExists(baseDir + cfg.picsFolder)) then CreateDir(baseDir + cfg.picsFolder);
+
 
 stashPic := 'stash_picture';
 mapPartPic := 'map_part_picture';
@@ -192,7 +204,8 @@ var
   tmpBmp: TBitmap;
   jpg: TJpegImage;
   png : TPNGImage;
-  FileName: string;
+  fileName: string;
+  currentMonthFolder : string;
 begin
   hWin := 0;
   //active window
@@ -241,16 +254,40 @@ begin
         jpg.Assign(tmpBmp);
         jpg.CompressionQuality := quality;
         jpg.Compress;
-        FileName := 'c:\'+StringReplace( DateToStr(Now) + '_' + TimeToStr(Now), ':','-', [rfReplaceAll, rfIgnoreCase])+'_'+inttostr(random(9999))+'.jpg';
-        jpg.SaveToFile(FileName);
+
+        if cfg.storeImages then begin
+          currentMonthFolder := '\' + FormatDateTime('YYYY-mm',Now);
+          if (not DirectoryExists(baseDir + cfg.picsFolder + currentMonthFolder)) then CreateDir(baseDir + cfg.picsFolder + currentMonthFolder);
+          fileName := baseDir + cfg.picsFolder + currentMonthFolder + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.jpg';
+        end
+        else
+        begin
+          fileName := baseDir + cfg.picsFolder + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.jpg';
+        end;
+
+        jpg.SaveToFile(fileName);
+        jpg.Free;
+
       end;
     PNG_FILE:
       begin
         png := TPNGImage.Create;
         png.Assign(tmpBmp);
-        FileName := 'c:\'+StringReplace( DateToStr(Now) + '_' + TimeToStr(Now), ':','-', [rfReplaceAll, rfIgnoreCase])+'_'+inttostr(random(9999))+'.png';
+
+        if cfg.storeImages then begin
+          currentMonthFolder := '\' + FormatDateTime('YYYY-mm',Now);
+          if (not DirectoryExists(baseDir + cfg.picsFolder + currentMonthFolder)) then CreateDir(baseDir + cfg.picsFolder + currentMonthFolder);
+          fileName := baseDir + cfg.picsFolder + currentMonthFolder + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.png';
+        end
+        else
+        begin
+          fileName := baseDir + cfg.picsFolder + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.png';
+        end;
+
         png.CompressionLevel := quality;
-        png.SaveToFile(FileName);
+        png.SaveToFile(fileName);
+        png.Free;
+
       end;
   end;
 
@@ -259,12 +296,8 @@ begin
   finally
     ReleaseDC(hWin,DC);
     FreeAndNil(tmpBmp);
-    case fileType of
-      JPG_FILE: FreeAndNil(jpg);
-      PNG_FILE: FreeAndNil(png);
-    end;
   end;  //try-finally
-  Result := FileName;
+  Result := fileName;
 end;
 
 end.

@@ -37,6 +37,8 @@ begin
   response := IdHTTP.Post('http://rustmap.hostenko.com/map/add/picLoad', formData);
   form1.memo1.Lines.Add(response);
   IdHTTP.Destroy;
+  formData.Destroy;
+  if not cfg.storeImages then System.SysUtils.DeleteFile(FileDestination.fileName);
   fts.ready := true;
 end;
 
