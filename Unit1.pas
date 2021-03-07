@@ -3,9 +3,10 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  IdAuthentication{?}, mmsystem, ShellAPI, Jpeg, PNGImage, Vcl.ExtCtrls, Config, RegularExpressions;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
+  IdAuthentication{?}, mmsystem, ShellAPI, Jpeg, PNGImage, Vcl.ExtCtrls, Config,
+  RegularExpressions, TlHelp32;
 
 type
 
@@ -37,6 +38,8 @@ end;
     launchRustOnStartupCheckbox: TCheckBox;
     launchRustOnStartupAndConnectToServerCheckbox: TCheckBox;
     rustServerEdit: TEdit;
+    closeStashPicTimer: TTimer;
+    closeStashPicOnRustCloseCheckbox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Timer1Timer(Sender: TObject);
@@ -47,6 +50,9 @@ end;
     procedure launchRustOnStartupAndConnectToServerCheckboxClick(
       Sender: TObject);
     procedure rustServerEditChange(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure closeStashPicOnRustCloseCheckboxClick(Sender: TObject);
+    procedure closeStashPicTimerTimer(Sender: TObject);
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -66,13 +72,16 @@ const
 var
   Form1: TForm1;
   fTS : TFilesToSend;
-  fileName, baseDir : string;
+  baseDir : string;
   stashPic, mapPartPic : string;
   cfg : TConfig;
+  rustHasBeenLaunched : boolean = false;
 
 implementation
 uses SendFileToServer;
 {$R *.dfm}
+
+
 
 
 procedure TFilesToSend.Add(fileName, dest : string);
@@ -104,6 +113,28 @@ begin
   if count > 0 then Exit(false) else Exit(true);
 end;
 
+function processExists(exeFileName: string): Boolean;
+var
+  ContinueLoop: BOOL;
+  FSnapshotHandle: THandle;
+  FProcessEntry32: TProcessEntry32;
+begin
+  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
+  ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
+  Result := False;
+  while Integer(ContinueLoop) <> 0 do
+  begin
+    if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
+      UpperCase(ExeFileName)) or (UpperCase(FProcessEntry32.szExeFile) =
+      UpperCase(ExeFileName))) then
+    begin
+      Result := True;
+    end;
+    ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
+  end;
+  CloseHandle(FSnapshotHandle);
+end;
 
 procedure TForm1.SendPic();
 var a : TSendFileToServer;
@@ -126,9 +157,32 @@ end;
 
 
 
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  if processExists('notepad.exe') then
+    ShowMessage('process is running')
+  else
+    ShowMessage('process not running');
+end;
+
 procedure TForm1.Button2Click(Sender: TObject);
 begin
 ShellExecute(0,'open',PChar('steam://connect/149.202.65.76:28015'),nil,nil, SW_SHOWNORMAL);
+end;
+
+procedure TForm1.closeStashPicOnRustCloseCheckboxClick(Sender: TObject);
+begin
+  cfg.closeStashPicOnRustClose := closeStashPicOnRustCloseCheckbox.Checked;
+  closeStashPicTimer.Enabled := closeStashPicOnRustCloseCheckbox.Checked;
+  cfg.save;
+end;
+
+procedure TForm1.closeStashPicTimerTimer(Sender: TObject);
+var rustRunning : boolean;
+begin
+rustRunning := processExists('rustclient.exe');
+if rustRunning then rustHasBeenLaunched := true;
+if (rustHasBeenLaunched and not rustRunning) then halt;
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -157,6 +211,9 @@ begin
     launchRustOnStartupAndConnectToServerCheckbox.Enabled := false;
     rustServerEdit.Enabled := false;
   end;
+  closeStashPicOnRustCloseCheckbox.Checked := cfg.closeStashPicOnRustClose;
+  if closeStashPicOnRustCloseCheckbox.Checked then closeStashPicTimer.Enabled := true;
+
 
   baseDir :=  ExtractFileDir(Application.ExeName);
   if (not DirectoryExists(baseDir + cfg.picsFolder)) then CreateDir(baseDir + cfg.picsFolder);

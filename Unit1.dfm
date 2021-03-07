@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 589
+  ClientHeight = 616
   ClientWidth = 635
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,12 +22,13 @@ object Form1: TForm1
     Height = 25
     Caption = 'Button1'
     TabOrder = 0
+    OnClick = Button1Click
   end
   object Memo1: TMemo
     Left = 40
     Top = 104
     Width = 505
-    Height = 377
+    Height = 249
     Lines.Strings = (
       'Memo1')
     TabOrder = 1
@@ -43,7 +44,7 @@ object Form1: TForm1
   end
   object storeImagesCheckbox: TCheckBox
     Left = 40
-    Top = 496
+    Top = 359
     Width = 97
     Height = 17
     Caption = 'Store images'
@@ -52,7 +53,7 @@ object Form1: TForm1
   end
   object launchRustOnStartupCheckbox: TCheckBox
     Left = 40
-    Top = 528
+    Top = 391
     Width = 137
     Height = 17
     Caption = 'Launch Rust on startup'
@@ -61,7 +62,7 @@ object Form1: TForm1
   end
   object launchRustOnStartupAndConnectToServerCheckbox: TCheckBox
     Left = 40
-    Top = 560
+    Top = 423
     Width = 265
     Height = 17
     Caption = 'Launch Rust on startup and connect to the server :'
@@ -70,7 +71,7 @@ object Form1: TForm1
   end
   object rustServerEdit: TEdit
     Left = 311
-    Top = 560
+    Top = 423
     Width = 265
     Height = 21
     Hint = 'Incorrect address1'
@@ -81,10 +82,26 @@ object Form1: TForm1
     TextHint = '255.255.255.255:28015'
     OnChange = rustServerEditChange
   end
+  object closeStashPicOnRustCloseCheckbox: TCheckBox
+    Left = 40
+    Top = 454
+    Width = 217
+    Height = 17
+    Caption = 'closeStashPicOnRustCloseCheckbox'
+    TabOrder = 7
+    OnClick = closeStashPicOnRustCloseCheckboxClick
+  end
   object Timer1: TTimer
     Interval = 50
     OnTimer = Timer1Timer
     Left = 176
     Top = 8
+  end
+  object closeStashPicTimer: TTimer
+    Enabled = False
+    Interval = 3000
+    OnTimer = closeStashPicTimerTimer
+    Left = 448
+    Top = 24
   end
 end
