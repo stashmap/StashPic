@@ -10,15 +10,15 @@ type
     usi : string;
     storeImages : boolean;
     launchRustOnStartup : boolean;
-    connectToServerOnStartup : boolean;
-    rustServer : string;
+    launchRustOnStartupAndConnectToServer : boolean;
+    rustServerAddress : string;
     closeStashPicOnRustClose : boolean;
     serverAddress : string;
 
     const key = 'Software\StashPic\';
     picsFolder = '/pics';
-    procedure save();
     procedure load();
+    procedure save();
     procedure init();
     function newUsi():string;
   end;
@@ -33,8 +33,8 @@ begin
   usi := reg.ReadString('usi');
   storeImages := reg.ReadBool('storeImages');
   launchRustOnStartup := reg.ReadBool('launchRustOnStartup');
-  connectToServerOnStartup := reg.ReadBool('connectToServerOnStartup');
-  rustServer := reg.ReadString('rustServer');
+  launchRustOnStartupAndConnectToServer := reg.ReadBool('launchRustOnStartupAndConnectToServer');
+  rustServerAddress := reg.ReadString('rustServer');
   closeStashPicOnRustClose := reg.ReadBool('closeStashPicOnRustClose');
   serverAddress := reg.ReadString('serverAddress');
   reg.CloseKey();
@@ -49,8 +49,8 @@ begin
   reg.WriteString('usi', usi);
   reg.WriteBool('storeImages', storeImages);
   reg.WriteBool('launchRustOnStartup', launchRustOnStartup);
-  reg.WriteBool('connectToServerOnStartup', connectToServerOnStartup);
-  reg.WriteString('rustServer', rustServer);
+  reg.WriteBool('launchRustOnStartupAndConnectToServer', launchRustOnStartupAndConnectToServer);
+  reg.WriteString('rustServer', rustServerAddress);
   reg.WriteBool('closeStashPicOnRustClose', closeStashPicOnRustClose);
   reg.WriteString('serverAddress', serverAddress);
   reg.CloseKey();
@@ -67,8 +67,8 @@ begin
   usi := newUsi();
   storeImages := true;
   launchRustOnStartup := false;
-  connectToServerOnStartup := false;
-  rustServer := '';
+  launchRustOnStartupAndConnectToServer := false;
+  rustServerAddress := '';
   closeStashPicOnRustClose := false;
   serverAddress := 'http://rustmap.hostenko.com/map/add/picLoad';
   save();

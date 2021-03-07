@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  IdAuthentication{?}, mmsystem, ShellAPI, Jpeg, PNGImage, Vcl.ExtCtrls, Config;
+  IdAuthentication{?}, mmsystem, ShellAPI, Jpeg, PNGImage, Vcl.ExtCtrls, Config, RegularExpressions;
 
 type
 
@@ -34,13 +34,19 @@ end;
     Timer1: TTimer;
     Button2: TButton;
     storeImagesCheckbox: TCheckBox;
+    launchRustOnStartupCheckbox: TCheckBox;
+    launchRustOnStartupAndConnectToServerCheckbox: TCheckBox;
+    rustServerEdit: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Timer1Timer(Sender: TObject);
     procedure SendPic();
-    procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure storeImagesCheckboxClick(Sender: TObject);
+    procedure launchRustOnStartupCheckboxClick(Sender: TObject);
+    procedure launchRustOnStartupAndConnectToServerCheckboxClick(
+      Sender: TObject);
+    procedure rustServerEditChange(Sender: TObject);
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -118,10 +124,7 @@ begin
 SendPic;
 end;
 
-procedure TForm1.Button1Click(Sender: TObject);
-begin
-ShellExecute(0,'open',PChar('steam://rungameid/252490'),nil,nil, SW_SHOWNORMAL);
-end;
+
 
 procedure TForm1.Button2Click(Sender: TObject);
 begin
@@ -137,31 +140,51 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-//ShellExecute(0,'open',PChar('steam://rungameid/252490'),nil,nil, SW_SHOWNORMAL);
-cfg := TConfig.Create;
-cfg.init;
-cfg.load;
-storeImagesCheckbox.Checked := cfg.storeImages;
+  cfg := TConfig.Create;
+  cfg.init;
+  cfg.load;
+  storeImagesCheckbox.Checked := cfg.storeImages;
+  launchRustOnStartupCheckbox.Checked := cfg.launchRustOnStartup;
+  launchRustOnStartupAndConnectToServerCheckbox.Checked := cfg.launchRustOnStartupAndConnectToServer;
+  rustServerEdit.Text := cfg.rustServerAddress;
+  if launchRustOnStartupCheckbox.Checked then
+  begin
+    launchRustOnStartupAndConnectToServerCheckbox.Enabled := true;
+    rustServerEdit.Enabled := true;
+  end
+  else
+  begin
+    launchRustOnStartupAndConnectToServerCheckbox.Enabled := false;
+    rustServerEdit.Enabled := false;
+  end;
 
-baseDir :=  ExtractFileDir(Application.ExeName);
-if (not DirectoryExists(baseDir + cfg.picsFolder)) then CreateDir(baseDir + cfg.picsFolder);
+  baseDir :=  ExtractFileDir(Application.ExeName);
+  if (not DirectoryExists(baseDir + cfg.picsFolder)) then CreateDir(baseDir + cfg.picsFolder);
 
+  stashPic := 'stash_picture';
+  mapPartPic := 'map_part_picture';
+  fts := TFilesToSend.Create;
+  fts.ready := true;
+  if not RegisterHotkey(Handle, 1, MOD_ALT, 49) then //1
+    ShowMessage('Unable to assign WIN+V as hotkey.');
 
-stashPic := 'stash_picture';
-mapPartPic := 'map_part_picture';
-fts := TFilesToSend.Create;
-fts.ready := true;
-if not RegisterHotkey(Handle, 1, MOD_ALT, 49) then //1
-  ShowMessage('Unable to assign WIN+V as hotkey.');
+  if not RegisterHotkey(Handle, 2, MOD_ALT, 50) then //2
+    ShowMessage('Unable to assign WIN+V as hotkey.');
 
-if not RegisterHotkey(Handle, 2, MOD_ALT, 50) then //2
-  ShowMessage('Unable to assign WIN+V as hotkey.');
+  if not RegisterHotkey(Handle, 3, MOD_ALT, 51) then //3
+    ShowMessage('Unable to assign WIN+V as hotkey.');
 
-if not RegisterHotkey(Handle, 3, MOD_ALT, 51) then //3
-  ShowMessage('Unable to assign WIN+V as hotkey.');
+  if not RegisterHotkey(Handle, 4, MOD_ALT, 52) then //4
+    ShowMessage('Unable to assign WIN+V as hotkey.');
 
-if not RegisterHotkey(Handle, 4, MOD_ALT, 52) then //4
-  ShowMessage('Unable to assign WIN+V as hotkey.');
+  if (cfg.launchRustOnStartupAndConnectToServer) then
+  begin
+    ShellExecute(0,'open',PChar('steam://connect/'+cfg.rustServerAddress),nil,nil, SW_SHOWNORMAL);
+  end
+  else begin
+    if cfg.launchRustOnStartup then ShellExecute(0,'open',PChar('steam://rungameid/252490'),nil,nil, SW_SHOWNORMAL);
+  end;
+
 end;
 
 procedure TForm1.WMHotkey( var msg: TWMHotkey );
@@ -299,5 +322,67 @@ begin
   end;  //try-finally
   Result := fileName;
 end;
+
+procedure TForm1.launchRustOnStartupAndConnectToServerCheckboxClick(
+  Sender: TObject);
+begin
+cfg.launchRustOnStartupAndConnectToServer := launchRustOnStartupAndConnectToServerCheckbox.Checked;
+cfg.save;
+
+end;
+
+procedure TForm1.launchRustOnStartupCheckboxClick(Sender: TObject);
+begin
+cfg.launchRustOnStartup := launchRustOnStartupCheckbox.Checked;
+cfg.save;
+  if launchRustOnStartupCheckbox.Checked then
+  begin
+    launchRustOnStartupAndConnectToServerCheckbox.Enabled := true;
+    rustServerEdit.Enabled := true;
+  end
+  else
+  begin
+    launchRustOnStartupAndConnectToServerCheckbox.Enabled := false;
+    rustServerEdit.Enabled := false;
+    rustServerEdit.Color := clWhite;
+    launchRustOnStartupAndConnectToServerCheckbox.Checked := false;
+    cfg.launchRustOnStartupAndConnectToServer := false;
+    cfg.save;
+  end;
+
+end;
+
+procedure TForm1.rustServerEditChange(Sender: TObject);
+var match:TMatch;
+    ipPortRegExp : String;
+begin
+
+try
+  ipPortRegExp := '\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):\d{2,5}\b';
+  if TRegEx.IsMatch(rustServerEdit.Text, ipPortRegExp) then
+  begin
+    rustServerEdit.Color := clMoneyGreen;
+    rustServerEdit.Hint := 'Correct server IP:Port';
+    match := TRegEx.Match(rustServerEdit.Text, ipPortRegExp);
+    cfg.rustServerAddress := match.Value;
+    cfg.save;
+    rustServerEdit.Text := match.Value;
+  end
+  else
+  begin
+    rustServerEdit.Color := clSilver;
+    rustServerEdit.Hint := 'Incorrect server IP:Port';
+  end
+  except
+    on E: Exception do
+      Caption := E.ClassName + ': ' + E.Message;
+  end;
+
+end;
+
+
+
+
+
 
 end.
