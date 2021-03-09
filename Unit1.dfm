@@ -15,12 +15,19 @@ object Form1: TForm1
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
+  object usiLabel: TLabel
     Left = 40
     Top = 373
     Width = 52
     Height = 13
     Caption = 'Sender ID:'
+  end
+  object scaleLable: TLabel
+    Left = 40
+    Top = 469
+    Width = 126
+    Height = 13
+    Caption = 'Rust user interface scale :'
   end
   object Button1: TButton
     Left = 40
@@ -123,6 +130,19 @@ object Form1: TForm1
     Caption = 'Copy to clipboard'
     TabOrder = 10
     OnClick = copyToBufferButtonClick
+  end
+  object scaleBar: TTrackBar
+    Left = 40
+    Top = 488
+    Width = 150
+    Height = 45
+    Max = 100
+    Min = 50
+    Position = 50
+    TabOrder = 11
+    TickMarks = tmBoth
+    TickStyle = tsNone
+    OnChange = scaleBarChange
   end
   object Timer1: TTimer
     Interval = 50

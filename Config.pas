@@ -14,6 +14,7 @@ type
     rustServerAddress : string;
     closeStashPicOnRustClose : boolean;
     serverAddress : string;
+    scale : real;
 
     const key = 'Software\StashPic\';
     picsFolder = '/pics';
@@ -37,6 +38,7 @@ begin
   rustServerAddress := reg.ReadString('rustServer');
   closeStashPicOnRustClose := reg.ReadBool('closeStashPicOnRustClose');
   serverAddress := reg.ReadString('serverAddress');
+  scale := reg.ReadFloat('scale');
   reg.CloseKey();
   reg.Free;
 end;
@@ -53,6 +55,7 @@ begin
   reg.WriteString('rustServer', rustServerAddress);
   reg.WriteBool('closeStashPicOnRustClose', closeStashPicOnRustClose);
   reg.WriteString('serverAddress', serverAddress);
+  reg.WriteFloat('scale', scale);
   reg.CloseKey();
   reg.Free;
 end;
@@ -71,6 +74,7 @@ begin
   rustServerAddress := '';
   closeStashPicOnRustClose := false;
   serverAddress := 'http://rustmap.hostenko.com/map/add/picLoad';
+  scale := 1;
   save();
 end;
 

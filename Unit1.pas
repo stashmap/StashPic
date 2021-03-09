@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   IdAuthentication{?}, mmsystem, ShellAPI, Jpeg, PNGImage, Vcl.ExtCtrls, Config,
-  RegularExpressions, TlHelp32, Vcl.Clipbrd;
+  RegularExpressions, TlHelp32, Vcl.Clipbrd, Vcl.ComCtrls;
 
 type
 
@@ -43,7 +43,9 @@ end;
     usiEdit: TEdit;
     regenerateButton: TButton;
     copyToBufferButton: TButton;
-    Label1: TLabel;
+    usiLabel: TLabel;
+    scaleBar: TTrackBar;
+    scaleLable: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Timer1Timer(Sender: TObject);
@@ -58,6 +60,7 @@ end;
     procedure closeStashPicTimerTimer(Sender: TObject);
     procedure regenerateButtonClick(Sender: TObject);
     procedure copyToBufferButtonClick(Sender: TObject);
+    procedure scaleBarChange(Sender: TObject);
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -160,7 +163,12 @@ begin
 SendPic;
 end;
 
-
+procedure TForm1.scaleBarChange(Sender: TObject);
+begin
+scaleLable.Caption := 'Rust user interface scale : ' + floattostr(scaleBar.Position/100);
+cfg.scale := scaleBar.Position/100;
+cfg.save;
+end;
 
 procedure TForm1.Button2Click(Sender: TObject);
 begin
@@ -224,6 +232,9 @@ begin
   if (not DirectoryExists(baseDir + cfg.picsFolder)) then CreateDir(baseDir + cfg.picsFolder);
 
   usiEdit.Text := cfg.usi;
+  scaleLable.Caption := 'Rust user interface scale : ' + floattostr(cfg.scale);
+  scaleBar.Position := round(cfg.scale*100);
+
 
   stashPic := 'stash_picture';
   mapPartPic := 'map_part_picture';
@@ -275,6 +286,26 @@ begin
   end;
 end;
 
+function getTopLeftXofStashAreaUsingScale(scale:real):real;
+begin
+  Result := (0.2492+0.0776*scale)/0.5;
+end;
+
+function getTopLeftYofStashAreaUsingScale(scale:real):real;
+begin
+  Result := (0.49905-0.1171*scale)/0.5;
+end;
+
+function getWidthofStashAreaUsingScale(scale:real):real;
+begin
+  Result := (0.00185+0.1432*scale)/0.5;
+end;
+
+function getHeightofStashAreaUsingScale(scale:real):real;
+begin
+  Result := (0.00285+0.039699*scale)/0.5;
+end;
+
 function TForm1.GetScreenShot(area, quality, fileType : integer):string;
 var
   w,h,x,y: integer;
@@ -315,10 +346,10 @@ begin
       end;
     SCREEN_STASH_AREA:
       begin
-        tmpBmp.Width := round(w*0.2901);
-        tmpBmp.Height := round(h*0.0851);
-        x:=round(w*0.6536);
-        y:=round(h*0.7639);
+        tmpBmp.Width := round(w*getWidthofStashAreaUsingScale(cfg.scale));
+        tmpBmp.Height := round(h*getHeightofStashAreaUsingScale(cfg.scale));
+        x:=round(w*getTopLeftXofStashAreaUsingScale(cfg.scale));
+        y:=round(h*getTopLeftYofStashAreaUsingScale(cfg.scale));
       end;
   end;
 
