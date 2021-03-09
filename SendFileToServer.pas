@@ -20,8 +20,8 @@ uses unit1;
 
 procedure TSendFileToServer.Execute;
 var
-  response: string; //переменная для возращения HTML кода страницы
-  formData: TIdMultiPartFormDataStream; //для передачи информации
+  response: string;
+  formData: TIdMultiPartFormDataStream;
   idHTTP : TIdHTTP;
   FileDestination : TFleToDestination;
 begin
@@ -32,7 +32,7 @@ begin
   FileDestination := fts.get;
   if FileDestination.fileName = '' then exit;
   formData.AddFile('fileToUpload', FileDestination.fileName, 'application/octet-stream');
-  formData.AddFormField('usi', '1292429972');
+  formData.AddFormField('usi', cfg.usi);
   formData.AddFormField('destination', FileDestination.dest);
   response := IdHTTP.Post('http://rustmap.hostenko.com/map/add/picLoad', formData);
   form1.memo1.Lines.Add(response);

@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   IdAuthentication{?}, mmsystem, ShellAPI, Jpeg, PNGImage, Vcl.ExtCtrls, Config,
-  RegularExpressions, TlHelp32;
+  RegularExpressions, TlHelp32, Vcl.Clipbrd;
 
 type
 
@@ -40,6 +40,10 @@ end;
     rustServerEdit: TEdit;
     closeStashPicTimer: TTimer;
     closeStashPicOnRustCloseCheckbox: TCheckBox;
+    usiEdit: TEdit;
+    regenerateButton: TButton;
+    copyToBufferButton: TButton;
+    Label1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Timer1Timer(Sender: TObject);
@@ -52,6 +56,8 @@ end;
     procedure rustServerEditChange(Sender: TObject);
     procedure closeStashPicOnRustCloseCheckboxClick(Sender: TObject);
     procedure closeStashPicTimerTimer(Sender: TObject);
+    procedure regenerateButtonClick(Sender: TObject);
+    procedure copyToBufferButtonClick(Sender: TObject);
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -176,6 +182,12 @@ if rustRunning then rustHasBeenLaunched := true;
 if (rustHasBeenLaunched and not rustRunning) then Application.Terminate;
 end;
 
+procedure TForm1.copyToBufferButtonClick(Sender: TObject);
+begin
+ClipBoard.AsText := usiEdit.Text;
+copyToBufferButton.Caption := 'Copied!';
+end;
+
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
 UnRegisterHotkey( Handle, 1 );
@@ -210,6 +222,8 @@ begin
 
   baseDir :=  ExtractFileDir(Application.ExeName);
   if (not DirectoryExists(baseDir + cfg.picsFolder)) then CreateDir(baseDir + cfg.picsFolder);
+
+  usiEdit.Text := cfg.usi;
 
   stashPic := 'stash_picture';
   mapPartPic := 'map_part_picture';
@@ -396,6 +410,20 @@ cfg.save;
     cfg.save;
   end;
 
+end;
+
+procedure TForm1.regenerateButtonClick(Sender: TObject);
+var
+  buttonSelected : Integer;
+begin
+  buttonSelected := MessageDlg('Are you sure you want to regenerate the sender ID?',mtConfirmation, mbYesNo, 0);
+  if buttonSelected = mrYes then
+  begin
+    cfg.usi := cfg.newUsi;
+    cfg.save;
+    usiEdit.Text := cfg.usi;
+    copyToBufferButton.Caption := 'Copy to clipboard';
+  end;
 end;
 
 procedure TForm1.rustServerEditChange(Sender: TObject);

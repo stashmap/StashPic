@@ -15,6 +15,13 @@ object Form1: TForm1
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
+  object Label1: TLabel
+    Left = 40
+    Top = 373
+    Width = 52
+    Height = 13
+    Caption = 'Sender ID:'
+  end
   object Button1: TButton
     Left = 40
     Top = 16
@@ -27,7 +34,7 @@ object Form1: TForm1
     Left = 40
     Top = 104
     Width = 505
-    Height = 249
+    Height = 129
     Lines.Strings = (
       'Memo1')
     TabOrder = 1
@@ -43,7 +50,7 @@ object Form1: TForm1
   end
   object storeImagesCheckbox: TCheckBox
     Left = 40
-    Top = 359
+    Top = 247
     Width = 97
     Height = 17
     Caption = 'Store images'
@@ -52,7 +59,7 @@ object Form1: TForm1
   end
   object launchRustOnStartupCheckbox: TCheckBox
     Left = 40
-    Top = 391
+    Top = 279
     Width = 193
     Height = 17
     Caption = 'Run Rust on application startup'
@@ -61,7 +68,7 @@ object Form1: TForm1
   end
   object launchRustOnStartupAndConnectToServerCheckbox: TCheckBox
     Left = 40
-    Top = 423
+    Top = 311
     Width = 313
     Height = 17
     Caption = 'Run Rust on application startup and connect to the server :'
@@ -70,7 +77,7 @@ object Form1: TForm1
   end
   object rustServerEdit: TEdit
     Left = 352
-    Top = 421
+    Top = 309
     Width = 193
     Height = 21
     Hint = 'Incorrect address1'
@@ -78,23 +85,50 @@ object Form1: TForm1
     ParentShowHint = False
     ShowHint = True
     TabOrder = 6
-    TextHint = '255.255.255.255:28015'
+    TextHint = '255.255.255.255:65535'
     OnChange = rustServerEditChange
   end
   object closeStashPicOnRustCloseCheckbox: TCheckBox
     Left = 40
-    Top = 454
+    Top = 342
     Width = 217
     Height = 17
     Caption = 'Close the application when closing Rust'
     TabOrder = 7
     OnClick = closeStashPicOnRustCloseCheckboxClick
   end
+  object usiEdit: TEdit
+    Left = 40
+    Top = 392
+    Width = 193
+    Height = 21
+    ReadOnly = True
+    TabOrder = 8
+    Text = 'usiEdit'
+  end
+  object regenerateButton: TButton
+    Left = 40
+    Top = 419
+    Width = 81
+    Height = 25
+    Caption = 'Regenerate'
+    TabOrder = 9
+    OnClick = regenerateButtonClick
+  end
+  object copyToBufferButton: TButton
+    Left = 127
+    Top = 419
+    Width = 106
+    Height = 25
+    Caption = 'Copy to clipboard'
+    TabOrder = 10
+    OnClick = copyToBufferButtonClick
+  end
   object Timer1: TTimer
     Interval = 50
     OnTimer = Timer1Timer
-    Left = 176
-    Top = 8
+    Left = 360
+    Top = 24
   end
   object closeStashPicTimer: TTimer
     Enabled = False
