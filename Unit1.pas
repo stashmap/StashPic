@@ -68,6 +68,9 @@ const
   JPG_FILE = 0;
   PNG_FILE = 1;
 
+  MAX_ALLOWED_IMAGE_WIDTH = 1920;
+  MAX_ALLOWED_IMAGE_HEIGHT = 1080;
+
 var
   Form1: TForm1;
   fTS : TFilesToSend;
@@ -170,7 +173,7 @@ var rustRunning : boolean;
 begin
 if (processCount('rustclient.exe') > 0) then rustRunning := true;
 if rustRunning then rustHasBeenLaunched := true;
-if (rustHasBeenLaunched and not rustRunning) then halt;
+if (rustHasBeenLaunched and not rustRunning) then Application.Terminate;
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -258,13 +261,6 @@ begin
   end;
 end;
 
-procedure CropBitmap(InBitmap : TBitmap; X, Y, W, H :Integer);
-begin
-  BitBlt(InBitmap.Canvas.Handle, 0, 0, W, H, InBitmap.Canvas.Handle, X, Y, SRCCOPY);
-  InBitmap.Width :=W;
-  InBitmap.Height:=H;
-end;
-
 function TForm1.GetScreenShot(area, quality, fileType : integer):string;
 var
   w,h,x,y: integer;
@@ -302,8 +298,6 @@ begin
         tmpBmp.Height := round(h*0.5);
         x:=round(w*0.25);
         y:=round(h*0.25);
-
-//        CropBitmap(tmpBmp, round(tmpBmp.Width*0.25), round(tmpBmp.Height*0.25), round(tmpBmp.Width*0.5), round(tmpBmp.Height*0.5));
       end;
     SCREEN_STASH_AREA:
       begin
@@ -311,11 +305,16 @@ begin
         tmpBmp.Height := round(h*0.0851);
         x:=round(w*0.6536);
         y:=round(h*0.7639);
-//        CropBitmap(tmpBmp, round(tmpBmp.Width*0.6536), round(tmpBmp.Height*0.7639), round(tmpBmp.Width*0.2901), round(tmpBmp.Height*0.0851));
       end;
   end;
 
-    BitBlt(tmpBmp.Canvas.Handle,0,0,tmpBmp.Width,tmpBmp.Height,dc,x,y,SRCCOPY);
+  BitBlt(tmpBmp.Canvas.Handle,0,0,tmpBmp.Width,tmpBmp.Height,dc,x,y,SRCCOPY);
+  if (area = SCREEN_ALL_AREA) AND (tmpBmp.Width > MAX_ALLOWED_IMAGE_WIDTH) then
+  begin
+    PlaySoundA('tada.wav',0, SND_ASYNC);
+    tmpBmp.Canvas.StretchDraw( Rect(0, 0, MAX_ALLOWED_IMAGE_WIDTH, MAX_ALLOWED_IMAGE_HEIGHT), tmpBmp);
+    tmpBmp.SetSize(MAX_ALLOWED_IMAGE_WIDTH, MAX_ALLOWED_IMAGE_HEIGHT);
+  end;
 
   case fileType of
     JPG_FILE:
