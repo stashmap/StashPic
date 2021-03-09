@@ -50,7 +50,6 @@ end;
     procedure launchRustOnStartupAndConnectToServerCheckboxClick(
       Sender: TObject);
     procedure rustServerEditChange(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure closeStashPicOnRustCloseCheckboxClick(Sender: TObject);
     procedure closeStashPicTimerTimer(Sender: TObject);
   private
@@ -113,7 +112,7 @@ begin
   if count > 0 then Exit(false) else Exit(true);
 end;
 
-function processExists(exeFileName: string): Boolean;
+function processCount(exeFileName: string): integer;
 var
   ContinueLoop: BOOL;
   FSnapshotHandle: THandle;
@@ -122,15 +121,12 @@ begin
   FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
   FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
   ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
-  Result := False;
+  Result := 0;
   while Integer(ContinueLoop) <> 0 do
   begin
     if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
       UpperCase(ExeFileName)) or (UpperCase(FProcessEntry32.szExeFile) =
-      UpperCase(ExeFileName))) then
-    begin
-      Result := True;
-    end;
+      UpperCase(ExeFileName))) then inc(Result);
     ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
   end;
   CloseHandle(FSnapshotHandle);
@@ -157,14 +153,6 @@ end;
 
 
 
-procedure TForm1.Button1Click(Sender: TObject);
-begin
-  if processExists('notepad.exe') then
-    ShowMessage('process is running')
-  else
-    ShowMessage('process not running');
-end;
-
 procedure TForm1.Button2Click(Sender: TObject);
 begin
 ShellExecute(0,'open',PChar('steam://connect/149.202.65.76:28015'),nil,nil, SW_SHOWNORMAL);
@@ -180,7 +168,7 @@ end;
 procedure TForm1.closeStashPicTimerTimer(Sender: TObject);
 var rustRunning : boolean;
 begin
-rustRunning := processExists('rustclient.exe');
+if (processCount('rustclient.exe') > 0) then rustRunning := true;
 if rustRunning then rustHasBeenLaunched := true;
 if (rustHasBeenLaunched and not rustRunning) then halt;
 end;
@@ -194,6 +182,8 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  if processCount(ExtractFileName(Application.ExeName)) > 1 then Application.Terminate;
+
   cfg := TConfig.Create;
   cfg.init;
   cfg.load;

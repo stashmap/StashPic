@@ -22,7 +22,6 @@ object Form1: TForm1
     Height = 25
     Caption = 'Button1'
     TabOrder = 0
-    OnClick = Button1Click
   end
   object Memo1: TMemo
     Left = 40
@@ -54,25 +53,25 @@ object Form1: TForm1
   object launchRustOnStartupCheckbox: TCheckBox
     Left = 40
     Top = 391
-    Width = 137
+    Width = 193
     Height = 17
-    Caption = 'Launch Rust on startup'
+    Caption = 'Run Rust on application startup'
     TabOrder = 4
     OnClick = launchRustOnStartupCheckboxClick
   end
   object launchRustOnStartupAndConnectToServerCheckbox: TCheckBox
     Left = 40
     Top = 423
-    Width = 265
+    Width = 313
     Height = 17
-    Caption = 'Launch Rust on startup and connect to the server :'
+    Caption = 'Run Rust on application startup and connect to the server :'
     TabOrder = 5
     OnClick = launchRustOnStartupAndConnectToServerCheckboxClick
   end
   object rustServerEdit: TEdit
-    Left = 311
-    Top = 423
-    Width = 265
+    Left = 352
+    Top = 421
+    Width = 193
     Height = 21
     Hint = 'Incorrect address1'
     Color = clWhite
@@ -87,7 +86,7 @@ object Form1: TForm1
     Top = 454
     Width = 217
     Height = 17
-    Caption = 'closeStashPicOnRustCloseCheckbox'
+    Caption = 'Close the application when closing Rust'
     TabOrder = 7
     OnClick = closeStashPicOnRustCloseCheckboxClick
   end
