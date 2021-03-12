@@ -30,10 +30,10 @@ type
 end;
 
   TForm1 = class(TForm)
-    Button1: TButton;
+    selectFolderButton: TButton;
     Memo1: TMemo;
     Timer1: TTimer;
-    Button2: TButton;
+    openFolderButton: TButton;
     storeImagesCheckbox: TCheckBox;
     launchRustOnStartupCheckbox: TCheckBox;
     launchRustOnStartupAndConnectToServerCheckbox: TCheckBox;
@@ -74,6 +74,8 @@ end;
     procedure editHotkey3ButtonClick(Sender: TObject);
     procedure editHotkey4ButtonClick(Sender: TObject);
     function registerHotkeyByCode(hotkeyNumber : integer; hotkeyCodeStr : string):boolean;
+    procedure selectFolderButtonClick(Sender: TObject);
+    procedure openFolderButtonClick(Sender: TObject);
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -180,6 +182,22 @@ begin
 scaleLable.Caption := 'Rust user interface scale : ' + floattostr(scaleBar.Position/100);
 cfg.scale := scaleBar.Position/100;
 cfg.save;
+end;
+
+procedure TForm1.selectFolderButtonClick(Sender: TObject);
+var
+  OpenDialog: TFileOpenDialog;
+begin
+  OpenDialog := TFileOpenDialog.Create(Form1);
+  try
+    OpenDialog.Options := OpenDialog.Options + [fdoPickFolders];
+    OpenDialog.DefaultFolder := cfg.picsFolder;
+    if not OpenDialog.Execute then Abort;
+    cfg.picsFolder := OpenDialog.FileName;
+    cfg.save;
+  finally
+    OpenDialog.Free;
+  end;
 end;
 
 function TForm1.registerHotkeyByCode(hotkeyNumber : integer; hotkeyCodeStr : string):boolean;
@@ -312,9 +330,14 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   if processCount(ExtractFileName(Application.ExeName)) > 1 then Application.Terminate;
+
+  baseDir := ExtractFileDir(Application.ExeName);
   cfg := TConfig.Create;
-  cfg.init;
+  cfg.init(baseDir);
   cfg.load;
+
+  if (not DirectoryExists(cfg.picsFolder)) then CreateDir(cfg.picsFolder);
+
   storeImagesCheckbox.Checked := cfg.storeImages;
   launchRustOnStartupCheckbox.Checked := cfg.launchRustOnStartup;
   launchRustOnStartupAndConnectToServerCheckbox.Checked := cfg.launchRustOnStartupAndConnectToServer;
@@ -331,10 +354,6 @@ begin
   end;
   closeStashPicOnRustCloseCheckbox.Checked := cfg.closeStashPicOnRustClose;
   if closeStashPicOnRustCloseCheckbox.Checked then closeStashPicTimer.Enabled := true;
-
-
-  baseDir :=  ExtractFileDir(Application.ExeName);
-  if (not DirectoryExists(baseDir + cfg.picsFolder)) then CreateDir(baseDir + cfg.picsFolder);
 
   usiEdit.Text := cfg.usi;
   scaleLable.Caption := 'Rust user interface scale : ' + floattostr(cfg.scale);
@@ -483,12 +502,12 @@ begin
 
         if cfg.storeImages then begin
           currentMonthFolder := '\' + FormatDateTime('YYYY-mm',Now);
-          if (not DirectoryExists(baseDir + cfg.picsFolder + currentMonthFolder)) then CreateDir(baseDir + cfg.picsFolder + currentMonthFolder);
-          fileName := baseDir + cfg.picsFolder + currentMonthFolder + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.jpg';
+          if (not DirectoryExists(cfg.picsFolder + currentMonthFolder)) then CreateDir(cfg.picsFolder + currentMonthFolder);
+          fileName := cfg.picsFolder + currentMonthFolder + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.jpg';
         end
         else
         begin
-          fileName := baseDir + cfg.picsFolder + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.jpg';
+          fileName := baseDir + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.jpg';
         end;
 
         jpg.SaveToFile(fileName);
@@ -502,12 +521,12 @@ begin
 
         if cfg.storeImages then begin
           currentMonthFolder := '\' + FormatDateTime('YYYY-mm',Now);
-          if (not DirectoryExists(baseDir + cfg.picsFolder + currentMonthFolder)) then CreateDir(baseDir + cfg.picsFolder + currentMonthFolder);
-          fileName := baseDir + cfg.picsFolder + currentMonthFolder + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.png';
+          if (not DirectoryExists(cfg.picsFolder + currentMonthFolder)) then CreateDir(cfg.picsFolder + currentMonthFolder);
+          fileName := cfg.picsFolder + currentMonthFolder + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.png';
         end
         else
         begin
-          fileName := baseDir + cfg.picsFolder + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.png';
+          fileName := baseDir + '\' + FormatDateTime('YYYY-mm-dd hh-nn-ss.zzz', Now)+'.png';
         end;
 
         png.CompressionLevel := quality;
@@ -531,7 +550,6 @@ procedure TForm1.launchRustOnStartupAndConnectToServerCheckboxClick(
 begin
 cfg.launchRustOnStartupAndConnectToServer := launchRustOnStartupAndConnectToServerCheckbox.Checked;
 cfg.save;
-
 end;
 
 procedure TForm1.launchRustOnStartupCheckboxClick(Sender: TObject);
@@ -553,6 +571,11 @@ cfg.save;
     cfg.save;
   end;
 
+end;
+
+procedure TForm1.openFolderButtonClick(Sender: TObject);
+begin
+  ShellExecute(Application.Handle, PChar('explore'), PChar(cfg.picsFolder), nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TForm1.regenerateButtonClick(Sender: TObject);

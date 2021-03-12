@@ -24,12 +24,13 @@ type
     hotkeyCaptureStashAreaCode : string;
     hotkeyCaptureFullscreenMapPart : string;
     hotkeyCaptureFullscreenMapPartCode : string;
+    picsFolder : string;
 
     const key = 'Software\StashPic\';
-    picsFolder = '/pics';
+    picsFolderDefault = '\pics';
     procedure load();
     procedure save();
-    procedure init();
+    procedure init(baseDir : string);
     function newUsi():string;
   end;
 implementation
@@ -42,6 +43,7 @@ begin
   reg.OpenKey(key, False);
   usi := reg.ReadString('usi');
   storeImages := reg.ReadBool('storeImages');
+  picsFolder := reg.ReadString('picsFolder');
   launchRustOnStartup := reg.ReadBool('launchRustOnStartup');
   launchRustOnStartupAndConnectToServer := reg.ReadBool('launchRustOnStartupAndConnectToServer');
   rustServerAddress := reg.ReadString('rustServer');
@@ -67,6 +69,7 @@ begin
   reg.OpenKey(key, False);
   reg.WriteString('usi', usi);
   reg.WriteBool('storeImages', storeImages);
+  reg.WriteString('picsFolder', picsFolder);
   reg.WriteBool('launchRustOnStartup', launchRustOnStartup);
   reg.WriteBool('launchRustOnStartupAndConnectToServer', launchRustOnStartupAndConnectToServer);
   reg.WriteString('rustServer', rustServerAddress);
@@ -86,7 +89,7 @@ begin
   reg.Free;
 end;
 
-procedure TConfig.init();
+procedure TConfig.init(baseDir : string);
 var reg : TRegistry;
 begin
   reg := TRegistry.Create(KEY_READ);
@@ -95,6 +98,7 @@ begin
   if (not reg.OpenKey(key,True)) then halt;
   usi := newUsi();
   storeImages := true;
+  picsFolder := baseDir + picsFolderDefault;
   launchRustOnStartup := false;
   launchRustOnStartupAndConnectToServer := false;
   rustServerAddress := '';

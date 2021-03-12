@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 770
+  ClientHeight = 624
   ClientWidth = 483
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,56 +16,58 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object usiLabel: TLabel
-    Left = 40
-    Top = 373
+    Left = 32
+    Top = 157
     Width = 52
     Height = 13
     Caption = 'Sender ID:'
   end
   object scaleLable: TLabel
-    Left = 40
-    Top = 458
+    Left = 32
+    Top = 242
     Width = 126
     Height = 13
     Caption = 'Rust user interface scale :'
   end
-  object Button1: TButton
-    Left = 40
-    Top = 16
+  object selectFolderButton: TButton
+    Left = 343
+    Top = 23
     Width = 75
     Height = 25
-    Caption = 'Button1'
+    Caption = 'Select folder'
     TabOrder = 0
+    OnClick = selectFolderButtonClick
   end
   object Memo1: TMemo
-    Left = 40
-    Top = 104
+    Left = 32
+    Top = 479
     Width = 392
     Height = 129
     Lines.Strings = (
       'Memo1')
     TabOrder = 1
   end
-  object Button2: TButton
-    Left = 121
-    Top = 16
+  object openFolderButton: TButton
+    Left = 262
+    Top = 23
     Width = 75
     Height = 26
-    Caption = 'Button 2'
+    Caption = 'Open folder'
     TabOrder = 2
+    OnClick = openFolderButtonClick
   end
   object storeImagesCheckbox: TCheckBox
-    Left = 40
-    Top = 247
-    Width = 97
+    Left = 32
+    Top = 31
+    Width = 224
     Height = 17
-    Caption = 'Store images'
+    Caption = 'Save screenshot copy to selected folder '
     TabOrder = 3
     OnClick = storeImagesCheckboxClick
   end
   object launchRustOnStartupCheckbox: TCheckBox
-    Left = 40
-    Top = 279
+    Left = 32
+    Top = 63
     Width = 126
     Height = 17
     Caption = 'Run Rust on startup'
@@ -73,8 +75,8 @@ object Form1: TForm1
     OnClick = launchRustOnStartupCheckboxClick
   end
   object launchRustOnStartupAndConnectToServerCheckbox: TCheckBox
-    Left = 40
-    Top = 311
+    Left = 32
+    Top = 95
     Width = 209
     Height = 17
     Caption = 'Run Rust on startup and connect to :'
@@ -82,8 +84,8 @@ object Form1: TForm1
     OnClick = launchRustOnStartupAndConnectToServerCheckboxClick
   end
   object rustServerEdit: TEdit
-    Left = 239
-    Top = 309
+    Left = 231
+    Top = 93
     Width = 193
     Height = 21
     Hint = 'Incorrect address1'
@@ -95,8 +97,8 @@ object Form1: TForm1
     OnChange = rustServerEditChange
   end
   object closeStashPicOnRustCloseCheckbox: TCheckBox
-    Left = 40
-    Top = 342
+    Left = 32
+    Top = 126
     Width = 217
     Height = 17
     Caption = 'Close the application when closing Rust'
@@ -104,8 +106,8 @@ object Form1: TForm1
     OnClick = closeStashPicOnRustCloseCheckboxClick
   end
   object usiEdit: TEdit
-    Left = 40
-    Top = 392
+    Left = 32
+    Top = 176
     Width = 193
     Height = 21
     ReadOnly = True
@@ -113,8 +115,8 @@ object Form1: TForm1
     Text = 'usiEdit'
   end
   object regenerateButton: TButton
-    Left = 40
-    Top = 419
+    Left = 32
+    Top = 203
     Width = 81
     Height = 25
     Caption = 'Regenerate'
@@ -122,8 +124,8 @@ object Form1: TForm1
     OnClick = regenerateButtonClick
   end
   object copyToBufferButton: TButton
-    Left = 127
-    Top = 419
+    Left = 119
+    Top = 203
     Width = 106
     Height = 25
     Caption = 'Copy to clipboard'
@@ -131,8 +133,8 @@ object Form1: TForm1
     OnClick = copyToBufferButtonClick
   end
   object scaleBar: TTrackBar
-    Left = 40
-    Top = 477
+    Left = 32
+    Top = 261
     Width = 150
     Height = 45
     Max = 100
@@ -144,8 +146,8 @@ object Form1: TForm1
     OnChange = scaleBarChange
   end
   object GroupBox1: TGroupBox
-    Left = 40
-    Top = 528
+    Left = 32
+    Top = 312
     Width = 392
     Height = 153
     Caption = 'Hotkeys'
@@ -218,14 +220,14 @@ object Form1: TForm1
   object Timer1: TTimer
     Interval = 50
     OnTimer = Timer1Timer
-    Left = 296
-    Top = 256
+    Left = 256
+    Top = 120
   end
   object closeStashPicTimer: TTimer
     Enabled = False
     Interval = 3000
     OnTimer = closeStashPicTimerTimer
-    Left = 376
-    Top = 256
+    Left = 288
+    Top = 120
   end
 end
