@@ -46,11 +46,19 @@ end;
     usiLabel: TLabel;
     scaleBar: TTrackBar;
     scaleLable: TLabel;
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    editHotkey1Button: TButton;
+    editHotkey2Button: TButton;
+    editHotkey3Button: TButton;
+    editHotkey4Button: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Timer1Timer(Sender: TObject);
     procedure SendPic();
-    procedure Button2Click(Sender: TObject);
     procedure storeImagesCheckboxClick(Sender: TObject);
     procedure launchRustOnStartupCheckboxClick(Sender: TObject);
     procedure launchRustOnStartupAndConnectToServerCheckboxClick(
@@ -61,6 +69,11 @@ end;
     procedure regenerateButtonClick(Sender: TObject);
     procedure copyToBufferButtonClick(Sender: TObject);
     procedure scaleBarChange(Sender: TObject);
+    procedure editHotkey1ButtonClick(Sender: TObject);
+    procedure editHotkey2ButtonClick(Sender: TObject);
+    procedure editHotkey3ButtonClick(Sender: TObject);
+    procedure editHotkey4ButtonClick(Sender: TObject);
+    function registerHotkeyByCode(hotkeyNumber : integer; hotkeyCodeStr : string):boolean;
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -87,13 +100,12 @@ var
   stashPic, mapPartPic : string;
   cfg : TConfig;
   rustHasBeenLaunched : boolean = false;
+  hotkeyCodeString : string;
+  hotkeyAsString : string;
 
 implementation
-uses SendFileToServer;
+uses SendFileToServer, editHotkey;
 {$R *.dfm}
-
-
-
 
 procedure TFilesToSend.Add(fileName, dest : string);
 begin
@@ -170,9 +182,102 @@ cfg.scale := scaleBar.Position/100;
 cfg.save;
 end;
 
-procedure TForm1.Button2Click(Sender: TObject);
+function TForm1.registerHotkeyByCode(hotkeyNumber : integer; hotkeyCodeStr : string):boolean;
+var Modifiers: UINT;
+    key : Cardinal;
 begin
-ShellExecute(0,'open',PChar('steam://connect/149.202.65.76:28015'),nil,nil, SW_SHOWNORMAL);
+  Modifiers := 0;
+  if (hotkeyCodeStr[1] = '1') then Modifiers := Modifiers OR MOD_CONTROL;
+  if (hotkeyCodeStr[2] = '1') then Modifiers := Modifiers OR MOD_ALT;
+  if (hotkeyCodeStr[3] = '1') then Modifiers := Modifiers OR MOD_SHIFT;
+  key := StrToInt(Copy(hotkeyCodeStr,4,3));
+  Result := RegisterHotKey(Handle, hotkeyNumber, Modifiers, Key);
+end;
+
+procedure TForm1.editHotkey1ButtonClick(Sender: TObject);
+begin
+  hotkeyCodeString := cfg.hotkeyCaptureFullscreenCode;
+  editHotkeyForm.Caption := 'Edit Hotkey for "Capture fullscreen"';
+  editHotkeyForm.ShowModal;
+  if hotkeyAsString = '' then exit;
+  UnRegisterHotkey(Handle, 1);
+  if (registerHotkeyByCode(1, hotkeyCodeString)) then
+  begin
+    editHotkey1Button.Caption := hotkeyAsString;
+    cfg.hotkeyCaptureFullscreen := hotkeyAsString;
+    cfg.hotkeyCaptureFullscreenCode := hotkeyCodeString;
+    cfg.save;
+  end
+  else
+  begin
+    ShowMessage('Unable to assign '+hotkeyAsString+' as hotkey.');
+    registerHotkeyByCode(1, cfg.hotkeyCaptureFullscreenCode);
+  end;
+end;
+
+procedure TForm1.editHotkey2ButtonClick(Sender: TObject);
+begin
+  hotkeyCodeString := cfg.hotkeyCaptureRectangleCenterCode;
+  editHotkeyForm.Caption := 'Edit Hotkey for "Capture center rectangle"';
+  editHotkeyForm.ShowModal;
+  if hotkeyAsString = '' then exit;
+  UnRegisterHotkey(Handle, 2);
+  if (registerHotkeyByCode(2, hotkeyCodeString)) then
+  begin
+    editHotkey2Button.Caption := hotkeyAsString;
+    cfg.hotkeyCaptureRectangleCenter := hotkeyAsString;
+    cfg.hotkeyCaptureRectangleCenterCode := hotkeyCodeString;
+    cfg.save;
+  end
+  else
+  begin
+    ShowMessage('Unable to assign '+hotkeyAsString+' as hotkey.');
+    registerHotkeyByCode(2, cfg.hotkeyCaptureRectangleCenterCode);
+  end;
+
+
+end;
+
+procedure TForm1.editHotkey3ButtonClick(Sender: TObject);
+begin
+  hotkeyCodeString := cfg.hotkeyCaptureStashAreaCode;
+  editHotkeyForm.Caption := 'Edit Hotkey for "Capture stash area"';
+  editHotkeyForm.ShowModal;
+  if hotkeyAsString = '' then exit;
+  UnRegisterHotkey(Handle, 3);
+  if (registerHotkeyByCode(3, hotkeyCodeString)) then
+  begin
+    editHotkey3Button.Caption := hotkeyAsString;
+    cfg.hotkeyCaptureStashArea := hotkeyAsString;
+    cfg.hotkeyCaptureStashAreaCode := hotkeyCodeString;
+    cfg.save;
+  end
+  else
+  begin
+    ShowMessage('Unable to assign '+hotkeyAsString+' as hotkey.');
+    registerHotkeyByCode(3, cfg.hotkeyCaptureStashAreaCode );
+  end;
+end;
+
+procedure TForm1.editHotkey4ButtonClick(Sender: TObject);
+begin
+  hotkeyCodeString := cfg.hotkeyCaptureFullscreenMapPartCode;
+  editHotkeyForm.Caption := 'Edit Hotkey for "Capture fullscreen as map part"';
+  editHotkeyForm.ShowModal;
+  if hotkeyAsString = '' then exit;
+  UnRegisterHotkey(Handle, 4);
+  if (registerHotkeyByCode(4, hotkeyCodeString)) then
+  begin
+    editHotkey4Button.Caption := hotkeyAsString;
+    cfg.hotkeyCaptureFullscreenMapPart := hotkeyAsString;
+    cfg.hotkeyCaptureFullscreenMapPartCode := hotkeyCodeString;
+    cfg.save;
+  end
+  else
+  begin
+    ShowMessage('Unable to assign '+hotkeyAsString+' as hotkey.');
+    registerHotkeyByCode(4, cfg.hotkeyCaptureFullscreenMapPartCode );
+  end;
 end;
 
 procedure TForm1.closeStashPicOnRustCloseCheckboxClick(Sender: TObject);
@@ -201,12 +306,12 @@ begin
 UnRegisterHotkey( Handle, 1 );
 UnRegisterHotkey( Handle, 2 );
 UnRegisterHotkey( Handle, 3 );
+UnRegisterHotkey( Handle, 4 );
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   if processCount(ExtractFileName(Application.ExeName)) > 1 then Application.Terminate;
-
   cfg := TConfig.Create;
   cfg.init;
   cfg.load;
@@ -235,28 +340,34 @@ begin
   scaleLable.Caption := 'Rust user interface scale : ' + floattostr(cfg.scale);
   scaleBar.Position := round(cfg.scale*100);
 
+  editHotkey1Button.Caption := cfg.hotkeyCaptureFullscreen;
+  editHotkey2Button.Caption := cfg.hotkeyCaptureRectangleCenter;
+  editHotkey3Button.Caption := cfg.hotkeyCaptureStashArea;
+  editHotkey4Button.Caption := cfg.hotkeyCaptureFullscreenMapPart;
+
 
   stashPic := 'stash_picture';
   mapPartPic := 'map_part_picture';
   fts := TFilesToSend.Create;
   fts.ready := true;
-  if not RegisterHotkey(Handle, 1, MOD_ALT, 49) then //1
-    ShowMessage('Unable to assign WIN+V as hotkey.');
+  if not registerHotkeyByCode(1, cfg.hotkeyCaptureFullscreenCode) then
+    ShowMessage('Unable to assign '+cfg.hotkeyCaptureFullscreen+' as hotkey.');
 
-  if not RegisterHotkey(Handle, 2, MOD_ALT, 50) then //2
-    ShowMessage('Unable to assign WIN+V as hotkey.');
+  if not registerHotkeyByCode(2, cfg.hotkeyCaptureRectangleCenterCode) then
+    ShowMessage('Unable to assign '+cfg.hotkeyCaptureRectangleCenter+' as hotkey.');
 
-  if not RegisterHotkey(Handle, 3, MOD_ALT, 51) then //3
-    ShowMessage('Unable to assign WIN+V as hotkey.');
+  if not registerHotkeyByCode(3, cfg.hotkeyCaptureStashAreaCode) then
+    ShowMessage('Unable to assign '+cfg.hotkeyCaptureStashArea+' as hotkey.');
 
-  if not RegisterHotkey(Handle, 4, MOD_ALT, 52) then //4
-    ShowMessage('Unable to assign WIN+V as hotkey.');
+  if not registerHotkeyByCode(4, cfg.hotkeyCaptureFullscreenMapPartCode) then
+    ShowMessage('Unable to assign '+cfg.hotkeyCaptureFullscreenMapPart+' as hotkey.');
 
   if (cfg.launchRustOnStartupAndConnectToServer) then
   begin
     ShellExecute(0,'open',PChar('steam://connect/'+cfg.rustServerAddress),nil,nil, SW_SHOWNORMAL);
   end
-  else begin
+  else
+  begin
     if cfg.launchRustOnStartup then ShellExecute(0,'open',PChar('steam://rungameid/252490'),nil,nil, SW_SHOWNORMAL);
   end;
 
@@ -325,6 +436,9 @@ begin
   GetWindowRect(hWin,r);
   w := r.Right - r.Left;
   h := r.Bottom - r.Top;
+  x:=0;
+  y:=0;
+
 
   tmpBmp := TBitmap.Create;
   try
@@ -334,8 +448,6 @@ begin
       begin
         tmpBmp.Width := w;
         tmpBmp.Height := h;
-        x:=0;
-        y:=0;
       end;
     SCREEN_CENTER_AREA:
       begin

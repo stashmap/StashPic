@@ -34,7 +34,7 @@ begin
   formData.AddFile('fileToUpload', FileDestination.fileName, 'application/octet-stream');
   formData.AddFormField('usi', cfg.usi);
   formData.AddFormField('destination', FileDestination.dest);
-  response := IdHTTP.Post('http://rustmap.hostenko.com/map/add/picLoad', formData);
+  response := IdHTTP.Post('http://stashmap.net/map/add/picLoad', formData);
   form1.memo1.Lines.Add(response);
   IdHTTP.Destroy;
   formData.Destroy;

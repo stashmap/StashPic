@@ -16,6 +16,15 @@ type
     serverAddress : string;
     scale : real;
 
+    hotkeyCaptureFullscreen : string;
+    hotkeyCaptureFullscreenCode : string;
+    hotkeyCaptureRectangleCenter : string;
+    hotkeyCaptureRectangleCenterCode : string;
+    hotkeyCaptureStashArea : string;
+    hotkeyCaptureStashAreaCode : string;
+    hotkeyCaptureFullscreenMapPart : string;
+    hotkeyCaptureFullscreenMapPartCode : string;
+
     const key = 'Software\StashPic\';
     picsFolder = '/pics';
     procedure load();
@@ -39,6 +48,14 @@ begin
   closeStashPicOnRustClose := reg.ReadBool('closeStashPicOnRustClose');
   serverAddress := reg.ReadString('serverAddress');
   scale := reg.ReadFloat('scale');
+  hotkeyCaptureFullscreen := reg.ReadString('hotkeyCaptureFullscreen');
+  hotkeyCaptureFullscreenCode := reg.ReadString('hotkeyCaptureFullscreenCode');
+  hotkeyCaptureRectangleCenter := reg.ReadString('hotkeyCaptureRectangleCenter');
+  hotkeyCaptureRectangleCenterCode := reg.ReadString('hotkeyCaptureRectangleCenterCode');
+  hotkeyCaptureStashArea := reg.ReadString('hotkeyCaptureStashArea');
+  hotkeyCaptureStashAreaCode := reg.ReadString('hotkeyCaptureStashAreaCode');
+  hotkeyCaptureFullscreenMapPart := reg.ReadString('hotkeyCaptureFullscreenMapPart');
+  hotkeyCaptureFullscreenMapPartCode := reg.ReadString('hotkeyCaptureFullscreenMapPartCode');
   reg.CloseKey();
   reg.Free;
 end;
@@ -56,6 +73,15 @@ begin
   reg.WriteBool('closeStashPicOnRustClose', closeStashPicOnRustClose);
   reg.WriteString('serverAddress', serverAddress);
   reg.WriteFloat('scale', scale);
+  reg.WriteString('hotkeyCaptureFullscreen', hotkeyCaptureFullscreen);
+  reg.WriteString('hotkeyCaptureFullscreenCode', hotkeyCaptureFullscreenCode);
+  reg.WriteString('hotkeyCaptureRectangleCenter', hotkeyCaptureRectangleCenter);
+  reg.WriteString('hotkeyCaptureRectangleCenterCode', hotkeyCaptureRectangleCenterCode);
+  reg.WriteString('hotkeyCaptureStashArea', hotkeyCaptureStashArea);
+  reg.WriteString('hotkeyCaptureStashAreaCode', hotkeyCaptureStashAreaCode);
+  reg.WriteString('hotkeyCaptureFullscreenMapPart', hotkeyCaptureFullscreenMapPart);
+  reg.WriteString('hotkeyCaptureFullscreenMapPartCode', hotkeyCaptureFullscreenMapPartCode);
+
   reg.CloseKey();
   reg.Free;
 end;
@@ -73,8 +99,16 @@ begin
   launchRustOnStartupAndConnectToServer := false;
   rustServerAddress := '';
   closeStashPicOnRustClose := false;
-  serverAddress := 'http://rustmap.hostenko.com/map/add/picLoad';
+  serverAddress := 'http://stashmap.net/map/add/picLoad';
   scale := 1;
+  hotkeyCaptureFullscreen := 'Alt + 1';
+  hotkeyCaptureFullscreenCode := '010049';
+  hotkeyCaptureRectangleCenter := 'Alt + 2';
+  hotkeyCaptureRectangleCenterCode := '010050';
+  hotkeyCaptureStashArea := 'Alt + 3';
+  hotkeyCaptureStashAreaCode := '010051';
+  hotkeyCaptureFullscreenMapPart := 'Alt + 4';
+  hotkeyCaptureFullscreenMapPartCode := '010052';
   save();
 end;
 
