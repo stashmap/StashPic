@@ -25,6 +25,8 @@ type
     hotkeyCaptureFullscreenMapPart : string;
     hotkeyCaptureFullscreenMapPartCode : string;
     picsFolder : string;
+    automaticUpdate : boolean;
+    updateToken : string;
 
     const key = 'Software\StashPic\';
     picsFolderDefault = '\pics';
@@ -58,6 +60,8 @@ begin
   hotkeyCaptureStashAreaCode := reg.ReadString('hotkeyCaptureStashAreaCode');
   hotkeyCaptureFullscreenMapPart := reg.ReadString('hotkeyCaptureFullscreenMapPart');
   hotkeyCaptureFullscreenMapPartCode := reg.ReadString('hotkeyCaptureFullscreenMapPartCode');
+  automaticUpdate := reg.ReadBool('automaticUpdate');
+  updateToken := reg.ReadString('updateToken');
   reg.CloseKey();
   reg.Free;
 end;
@@ -84,7 +88,8 @@ begin
   reg.WriteString('hotkeyCaptureStashAreaCode', hotkeyCaptureStashAreaCode);
   reg.WriteString('hotkeyCaptureFullscreenMapPart', hotkeyCaptureFullscreenMapPart);
   reg.WriteString('hotkeyCaptureFullscreenMapPartCode', hotkeyCaptureFullscreenMapPartCode);
-
+  reg.WriteBool('automaticUpdate', automaticUpdate);
+  reg.WriteString('updateToken', updateToken);
   reg.CloseKey();
   reg.Free;
 end;
@@ -113,6 +118,8 @@ begin
   hotkeyCaptureStashAreaCode := '010051';
   hotkeyCaptureFullscreenMapPart := 'Alt + 4';
   hotkeyCaptureFullscreenMapPartCode := '010052';
+  automaticUpdate := true;
+  updateToken := '';
   save();
 end;
 

@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 624
-  ClientWidth = 483
+  ClientHeight = 679
+  ClientWidth = 476
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -29,6 +29,13 @@ object Form1: TForm1
     Height = 13
     Caption = 'Rust user interface scale :'
   end
+  object updateTokenLabel: TLabel
+    Left = 32
+    Top = 623
+    Width = 152
+    Height = 13
+    Caption = 'Paste clan'#39's update token here:'
+  end
   object selectFolderButton: TButton
     Left = 343
     Top = 23
@@ -42,7 +49,7 @@ object Form1: TForm1
     Left = 32
     Top = 479
     Width = 392
-    Height = 129
+    Height = 106
     Lines.Strings = (
       'Memo1')
     TabOrder = 1
@@ -216,6 +223,32 @@ object Form1: TForm1
       TabOrder = 3
       OnClick = editHotkey4ButtonClick
     end
+  end
+  object autoUpdateCheckBox: TCheckBox
+    Left = 32
+    Top = 600
+    Width = 113
+    Height = 17
+    Caption = 'Automatic update'
+    TabOrder = 13
+  end
+  object updateTokenEdit: TEdit
+    Left = 32
+    Top = 642
+    Width = 217
+    Height = 21
+    TabOrder = 14
+    Text = 'updateTokenEdit'
+    OnChange = updateTokenEditChange
+  end
+  object updateButton: TButton
+    Left = 255
+    Top = 646
+    Width = 75
+    Height = 25
+    Caption = 'Update now'
+    TabOrder = 15
+    OnClick = updateButtonClick
   end
   object Timer1: TTimer
     Interval = 50

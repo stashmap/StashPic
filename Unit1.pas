@@ -6,8 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   IdAuthentication{?}, mmsystem, ShellAPI, Jpeg, PNGImage, Vcl.ExtCtrls, Config,
-  RegularExpressions, TlHelp32, Vcl.Clipbrd, Vcl.ComCtrls;
-
+  RegularExpressions, TlHelp32, Vcl.Clipbrd, Vcl.ComCtrls, IdMultipartFormData,
+  IdHTTP;
 type
 
   TFleToDestination = record
@@ -55,6 +55,10 @@ end;
     editHotkey2Button: TButton;
     editHotkey3Button: TButton;
     editHotkey4Button: TButton;
+    autoUpdateCheckBox: TCheckBox;
+    updateTokenEdit: TEdit;
+    updateTokenLabel: TLabel;
+    updateButton: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Timer1Timer(Sender: TObject);
@@ -76,6 +80,8 @@ end;
     function registerHotkeyByCode(hotkeyNumber : integer; hotkeyCodeStr : string):boolean;
     procedure selectFolderButtonClick(Sender: TObject);
     procedure openFolderButtonClick(Sender: TObject);
+    procedure updateTokenEditChange(Sender: TObject);
+    procedure updateButtonClick(Sender: TObject);
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -85,6 +91,8 @@ end;
   end;
 
 const
+  VERSION = '0.10.0.0';
+
   SCREEN_ALL_AREA = 0;
   SCREEN_CENTER_AREA = 1;
   SCREEN_STASH_AREA = 2;
@@ -175,6 +183,18 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
 SendPic;
+end;
+
+procedure TForm1.updateButtonClick(Sender: TObject);
+begin
+  ShellExecute(0, 'open', Pchar( baseDir + '\Update.exe'), nil, nil, SW_SHOWNORMAL) ;
+  Application.Terminate;
+end;
+
+procedure TForm1.updateTokenEditChange(Sender: TObject);
+begin
+cfg.updateToken := updateTokenEdit.Text;
+cfg.save;
 end;
 
 procedure TForm1.scaleBarChange(Sender: TObject);
@@ -308,6 +328,7 @@ end;
 procedure TForm1.closeStashPicTimerTimer(Sender: TObject);
 var rustRunning : boolean;
 begin
+rustRunning := false;
 if (processCount('rustclient.exe') > 0) then rustRunning := true;
 if rustRunning then rustHasBeenLaunched := true;
 if (rustHasBeenLaunched and not rustRunning) then Application.Terminate;
@@ -328,6 +349,8 @@ UnRegisterHotkey( Handle, 4 );
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var formData: TIdMultiPartFormDataStream;
+    idHTTP : TIdHTTP;
 begin
   if processCount(ExtractFileName(Application.ExeName)) > 1 then Application.Terminate;
 
@@ -363,6 +386,25 @@ begin
   editHotkey2Button.Caption := cfg.hotkeyCaptureRectangleCenter;
   editHotkey3Button.Caption := cfg.hotkeyCaptureStashArea;
   editHotkey4Button.Caption := cfg.hotkeyCaptureFullscreenMapPart;
+
+  autoUpdateCheckBox.Checked := cfg.automaticUpdate;
+  updateTokenEdit.Text := cfg.updateToken;
+
+  if cfg.automaticUpdate then
+  begin
+    IdHTTP := TIdHTTP.Create;
+    formData := TIdMultiPartFormDataStream.Create;
+    formData.AddFormField('version', VERSION);
+    formData.AddFormField('updateToken', cfg.updateToken);
+    if IdHTTP.Post('http://stashmap.net/stashpic/update/check', formData) = 'new_version_available' then
+    begin
+      ShellExecute(0, 'open', Pchar( baseDir + '\Update.exe'), nil, nil, SW_SHOWNORMAL) ;
+      Application.Terminate;
+    end;
+    IdHTTP.Destroy;
+    formData.Destroy;
+  end;
+
 
 
   stashPic := 'stash_picture';
