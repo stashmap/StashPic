@@ -120,7 +120,7 @@ end;
   end;
 
 const
-  VERSION = '0.11.0.1';
+  VERSION = '0.11.2.0';
 
   SCREEN_ALL_AREA = 0;
   SCREEN_CENTER_AREA = 1;

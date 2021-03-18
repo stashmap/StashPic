@@ -137,12 +137,13 @@ begin
 end;
 
 function TConfig.newUsi():string;
-var usi : string;
+var usi, chars : string;
   i : integer;
 begin
+  chars := '0123456789abcde0123456789fghijklm0123456789nopqrst0123456789uvwxyz0123456789';
   randomize;
   usi := '';
-  for i := 1 to 10 do usi := usi + IntToStr( random(10) );
+  for i := 1 to 15 do usi := usi + chars[Random(length(chars))+1];
   Result := usi;
 end;
 
