@@ -1,7 +1,6 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  AutoSize = True
   BorderStyle = bsSingle
   BorderWidth = 1
   Caption = 'StashPic'
@@ -32,7 +31,6 @@ object Form1: TForm1
     Color = clWhite
     ParentBackground = False
     TabOrder = 0
-    ExplicitWidth = 312
     object settingsImage: TImage
       Left = 8
       Top = 8
@@ -79,7 +77,6 @@ object Form1: TForm1
     BevelEdges = []
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 312
     object Label1: TLabel
       Left = 8
       Top = 16
@@ -154,7 +151,6 @@ object Form1: TForm1
     BevelEdges = []
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitWidth = 312
     object usiLabel: TLabel
       Left = 8
       Top = 6
@@ -248,7 +244,6 @@ object Form1: TForm1
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 3
-    ExplicitWidth = 312
     object launchRustOnStartupCheckbox: TCheckBox
       Left = 8
       Top = 6
@@ -289,13 +284,14 @@ object Form1: TForm1
       TextHint = '255.255.255.255:65535'
       OnChange = rustServerEditChange
     end
-    object Button1: TButton
+    object connectToServerButton: TButton
       Left = 258
       Top = 48
       Width = 121
       Height = 25
       Caption = 'Connect now'
       TabOrder = 4
+      OnClick = connectToServerButtonClick
     end
   end
   object aboutPanel: TPanel
@@ -308,7 +304,6 @@ object Form1: TForm1
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 4
-    ExplicitWidth = 312
     object updateTokenLabel: TLabel
       Left = 8
       Top = 60

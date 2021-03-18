@@ -66,7 +66,7 @@ end;
     launchRustOnStartupAndConnectToServerCheckbox: TCheckBox;
     closeStashPicOnRustCloseCheckbox: TCheckBox;
     rustServerEdit: TEdit;
-    Button1: TButton;
+    connectToServerButton: TButton;
     logMemo: TMemo;
     autoUpdateCheckBox: TCheckBox;
     updateTokenLabel: TLabel;
@@ -110,6 +110,7 @@ end;
     procedure aboutImageMouseEnter(Sender: TObject);
     procedure aboutImageMouseLeave(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure connectToServerButtonClick(Sender: TObject);
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -119,7 +120,7 @@ end;
   end;
 
 const
-  VERSION = '0.11.0.0';
+  VERSION = '0.11.0.1';
 
   SCREEN_ALL_AREA = 0;
   SCREEN_CENTER_AREA = 1;
@@ -422,16 +423,7 @@ begin
   launchRustOnStartupCheckbox.Checked := cfg.launchRustOnStartup;
   launchRustOnStartupAndConnectToServerCheckbox.Checked := cfg.launchRustOnStartupAndConnectToServer;
   rustServerEdit.Text := cfg.rustServerAddress;
-  if launchRustOnStartupCheckbox.Checked then
-  begin
-    launchRustOnStartupAndConnectToServerCheckbox.Enabled := true;
-    rustServerEdit.Enabled := true;
-  end
-  else
-  begin
-    launchRustOnStartupAndConnectToServerCheckbox.Enabled := false;
-    rustServerEdit.Enabled := false;
-  end;
+  launchRustOnStartupAndConnectToServerCheckbox.Enabled := launchRustOnStartupCheckbox.Checked;
   closeStashPicOnRustCloseCheckbox.Checked := cfg.closeStashPicOnRustClose;
   if closeStashPicOnRustCloseCheckbox.Checked then closeStashPicTimer.Enabled := true;
 
@@ -524,6 +516,7 @@ begin
   appNameLabel.Caption := 'StashPic ' + s;
   Form1.Top := cfg.formTop;
   Form1.Left := cfg.formLeft;
+  Form1.AutoSize := true;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -628,7 +621,6 @@ begin
   BitBlt(tmpBmp.Canvas.Handle,0,0,tmpBmp.Width,tmpBmp.Height,dc,x,y,SRCCOPY);
   if (area = SCREEN_ALL_AREA) AND (tmpBmp.Width > MAX_ALLOWED_IMAGE_WIDTH) then
   begin
-    PlaySoundA('tada.wav',0, SND_ASYNC);
     tmpBmp.Canvas.StretchDraw( Rect(0, 0, MAX_ALLOWED_IMAGE_WIDTH, MAX_ALLOWED_IMAGE_HEIGHT), tmpBmp);
     tmpBmp.SetSize(MAX_ALLOWED_IMAGE_WIDTH, MAX_ALLOWED_IMAGE_HEIGHT);
   end;
@@ -698,13 +690,10 @@ cfg.save;
   if launchRustOnStartupCheckbox.Checked then
   begin
     launchRustOnStartupAndConnectToServerCheckbox.Enabled := true;
-    rustServerEdit.Enabled := true;
   end
   else
   begin
     launchRustOnStartupAndConnectToServerCheckbox.Enabled := false;
-    rustServerEdit.Enabled := false;
-    rustServerEdit.Color := clWhite;
     launchRustOnStartupAndConnectToServerCheckbox.Checked := false;
     cfg.launchRustOnStartupAndConnectToServer := false;
     cfg.save;
@@ -860,8 +849,9 @@ begin
   aboutImagelist.GetBitmap(REST, aboutImage.Picture.Bitmap);
 end;
 
-
-
-
+procedure TForm1.connectToServerButtonClick(Sender: TObject);
+begin
+ShellExecute(0,'open',PChar('steam://connect/'+cfg.rustServerAddress),nil,nil, SW_SHOWNORMAL);
+end;
 
 end.
