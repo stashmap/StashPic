@@ -27,6 +27,10 @@ type
     picsFolder : string;
     automaticUpdate : boolean;
     updateToken : string;
+    tab : string;
+    formTop : integer;
+    formLeft : integer;
+
 
     const key = 'Software\StashPic\';
     picsFolderDefault = '\pics';
@@ -62,6 +66,9 @@ begin
   hotkeyCaptureFullscreenMapPartCode := reg.ReadString('hotkeyCaptureFullscreenMapPartCode');
   automaticUpdate := reg.ReadBool('automaticUpdate');
   updateToken := reg.ReadString('updateToken');
+  tab := reg.ReadString('tab');
+  formLeft := reg.ReadInteger('formLeft');
+  formTop := reg.ReadInteger('formTop');
   reg.CloseKey();
   reg.Free;
 end;
@@ -90,6 +97,9 @@ begin
   reg.WriteString('hotkeyCaptureFullscreenMapPartCode', hotkeyCaptureFullscreenMapPartCode);
   reg.WriteBool('automaticUpdate', automaticUpdate);
   reg.WriteString('updateToken', updateToken);
+  reg.WriteString('tab', tab);
+  reg.WriteInteger ('formLeft', formLeft);
+  reg.WriteInteger('formTop', formTop);
   reg.CloseKey();
   reg.Free;
 end;
@@ -120,6 +130,9 @@ begin
   hotkeyCaptureFullscreenMapPartCode := '010052';
   automaticUpdate := true;
   updateToken := '';
+  formLeft := 300;
+  formTop := 200;
+  tab := 'settings';
   save();
 end;
 

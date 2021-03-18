@@ -280,6 +280,8 @@ procedure TeditHotkeyForm.FormShow(Sender: TObject);
 var key : string;
     j:integer;
 begin
+  editHotkeyForm.Left :=  round(Form1.Left + Form1.Width/2 - editHotkeyForm.Width/2);
+  editHotkeyForm.Top :=  round(Form1.Top + Form1.Height/2 - editHotkeyForm.Height/2);
   hotkeyAsString := '';
 
   if (hotkeyCodeString[1] = '1') then ctrlCheckBox.Checked := true else ctrlCheckBox.Checked := false;

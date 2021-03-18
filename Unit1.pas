@@ -7,7 +7,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   IdAuthentication{?}, mmsystem, ShellAPI, Jpeg, PNGImage, Vcl.ExtCtrls, Config,
   RegularExpressions, TlHelp32, Vcl.Clipbrd, Vcl.ComCtrls, IdMultipartFormData,
-  IdHTTP;
+  IdHTTP, System.ImageList, Vcl.ImgList;
 type
 
   TFleToDestination = record
@@ -30,36 +30,51 @@ type
 end;
 
   TForm1 = class(TForm)
-    selectFolderButton: TButton;
-    Memo1: TMemo;
     Timer1: TTimer;
-    openFolderButton: TButton;
-    storeImagesCheckbox: TCheckBox;
-    launchRustOnStartupCheckbox: TCheckBox;
-    launchRustOnStartupAndConnectToServerCheckbox: TCheckBox;
-    rustServerEdit: TEdit;
     closeStashPicTimer: TTimer;
-    closeStashPicOnRustCloseCheckbox: TCheckBox;
+    buttonPanel: TPanel;
+    settingsImage: TImage;
+    hotkeysImage: TImage;
+    rustImage: TImage;
+    aboutImage: TImage;
+    settingsImageList: TImageList;
+    hotkeysImageList: TImageList;
+    hotkeysPanel: TPanel;
+    aboutImageList: TImageList;
+    rustImageList: TImageList;
+    settingsPanel: TPanel;
+    rustPanel: TPanel;
+    aboutPanel: TPanel;
+    usiLabel: TLabel;
+    scaleLable: TLabel;
     usiEdit: TEdit;
     regenerateButton: TButton;
     copyToBufferButton: TButton;
-    usiLabel: TLabel;
     scaleBar: TTrackBar;
-    scaleLable: TLabel;
-    GroupBox1: TGroupBox;
+    selectFolderButton: TButton;
+    openFolderButton: TButton;
+    storeImagesCheckbox: TCheckBox;
     Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
     editHotkey1Button: TButton;
     editHotkey2Button: TButton;
+    Label2: TLabel;
+    Label3: TLabel;
     editHotkey3Button: TButton;
     editHotkey4Button: TButton;
+    Label4: TLabel;
+    launchRustOnStartupCheckbox: TCheckBox;
+    launchRustOnStartupAndConnectToServerCheckbox: TCheckBox;
+    closeStashPicOnRustCloseCheckbox: TCheckBox;
+    rustServerEdit: TEdit;
+    Button1: TButton;
+    logMemo: TMemo;
     autoUpdateCheckBox: TCheckBox;
-    updateTokenEdit: TEdit;
     updateTokenLabel: TLabel;
+    updateTokenEdit: TEdit;
     updateButton: TButton;
+    appNameLabel: TLabel;
     procedure FormCreate(Sender: TObject);
+    procedure Reset();
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Timer1Timer(Sender: TObject);
     procedure SendPic();
@@ -82,6 +97,19 @@ end;
     procedure openFolderButtonClick(Sender: TObject);
     procedure updateTokenEditChange(Sender: TObject);
     procedure updateButtonClick(Sender: TObject);
+    procedure settingsImageClick(Sender: TObject);
+    procedure settingsImageMouseEnter(Sender: TObject);
+    procedure settingsImageMouseLeave(Sender: TObject);
+    procedure hotkeysImageClick(Sender: TObject);
+    procedure hotkeysImageMouseLeave(Sender: TObject);
+    procedure rustImageClick(Sender: TObject);
+    procedure rustImageMouseEnter(Sender: TObject);
+    procedure rustImageMouseLeave(Sender: TObject);
+    procedure hotkeysImageMouseEnter(Sender: TObject);
+    procedure aboutImageClick(Sender: TObject);
+    procedure aboutImageMouseEnter(Sender: TObject);
+    procedure aboutImageMouseLeave(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -91,7 +119,7 @@ end;
   end;
 
 const
-  VERSION = '0.10.0.0';
+  VERSION = '0.11.0.0';
 
   SCREEN_ALL_AREA = 0;
   SCREEN_CENTER_AREA = 1;
@@ -103,6 +131,10 @@ const
   MAX_ALLOWED_IMAGE_WIDTH = 1920;
   MAX_ALLOWED_IMAGE_HEIGHT = 1080;
 
+  REST = 0;
+  HOVER = 1;
+  PRESSED = 2;
+
 var
   Form1: TForm1;
   fTS : TFilesToSend;
@@ -112,6 +144,11 @@ var
   rustHasBeenLaunched : boolean = false;
   hotkeyCodeString : string;
   hotkeyAsString : string;
+
+  settingsPressed : boolean = false;
+  hotkeysPressed : boolean = false;
+  rustPressed : boolean = false;
+  aboutPressed : boolean = false;
 
 implementation
 uses SendFileToServer, editHotkey;
@@ -172,7 +209,6 @@ begin
 if (not fts.Empty) and (fts.ready) then
 a := TSendFileToServer.Create();
 end;
-
 
 procedure TForm1.storeImagesCheckboxClick(Sender: TObject);
 begin
@@ -235,7 +271,6 @@ end;
 procedure TForm1.editHotkey1ButtonClick(Sender: TObject);
 begin
   hotkeyCodeString := cfg.hotkeyCaptureFullscreenCode;
-  editHotkeyForm.Caption := 'Edit Hotkey for "Capture fullscreen"';
   editHotkeyForm.ShowModal;
   if hotkeyAsString = '' then exit;
   UnRegisterHotkey(Handle, 1);
@@ -256,7 +291,6 @@ end;
 procedure TForm1.editHotkey2ButtonClick(Sender: TObject);
 begin
   hotkeyCodeString := cfg.hotkeyCaptureRectangleCenterCode;
-  editHotkeyForm.Caption := 'Edit Hotkey for "Capture center rectangle"';
   editHotkeyForm.ShowModal;
   if hotkeyAsString = '' then exit;
   UnRegisterHotkey(Handle, 2);
@@ -279,7 +313,6 @@ end;
 procedure TForm1.editHotkey3ButtonClick(Sender: TObject);
 begin
   hotkeyCodeString := cfg.hotkeyCaptureStashAreaCode;
-  editHotkeyForm.Caption := 'Edit Hotkey for "Capture stash area"';
   editHotkeyForm.ShowModal;
   if hotkeyAsString = '' then exit;
   UnRegisterHotkey(Handle, 3);
@@ -300,7 +333,6 @@ end;
 procedure TForm1.editHotkey4ButtonClick(Sender: TObject);
 begin
   hotkeyCodeString := cfg.hotkeyCaptureFullscreenMapPartCode;
-  editHotkeyForm.Caption := 'Edit Hotkey for "Capture fullscreen as map part"';
   editHotkeyForm.ShowModal;
   if hotkeyAsString = '' then exit;
   UnRegisterHotkey(Handle, 4);
@@ -348,9 +380,34 @@ UnRegisterHotkey( Handle, 3 );
 UnRegisterHotkey( Handle, 4 );
 end;
 
+procedure TForm1.Reset();
+begin
+  settingsPanel.Visible := false;
+  settingsPressed := false;
+  settingsImage.Picture := nil;
+  settingsImagelist.GetBitmap(REST, settingsImage.Picture.Bitmap);
+
+  hotkeysPanel.Visible := false;
+  hotkeysPressed := false;
+  hotkeysImage.Picture := nil;
+  hotkeysImageList.GetBitmap(REST, hotkeysImage.Picture.Bitmap);
+
+  rustPanel.Visible := false;
+  rustPressed := false;
+  rustImage.Picture := nil;
+  rustImageList.GetBitmap(REST, rustImage.Picture.Bitmap);
+
+  aboutPanel.Visible := false;
+  aboutPressed := false;
+  aboutImage.Picture := nil;
+  aboutImageList.GetBitmap(REST, aboutImage.Picture.Bitmap);
+end;
+
+
 procedure TForm1.FormCreate(Sender: TObject);
 var formData: TIdMultiPartFormDataStream;
     idHTTP : TIdHTTP;
+    s : string;
 begin
   if processCount(ExtractFileName(Application.ExeName)) > 1 then Application.Terminate;
 
@@ -432,6 +489,48 @@ begin
     if cfg.launchRustOnStartup then ShellExecute(0,'open',PChar('steam://rungameid/252490'),nil,nil, SW_SHOWNORMAL);
   end;
 
+  reset;
+  if cfg.tab = 'settings' then
+  begin
+    settingsPressed := true;
+    settingsPanel.Visible := true;
+    settingsImage.Picture := nil;
+    settingsImagelist.GetBitmap(PRESSED, settingsImage.Picture.Bitmap);
+  end;
+  if cfg.tab = 'hotkeys' then
+  begin
+    hotkeysPressed := true;
+    hotkeysPanel.Visible := true;
+    hotkeysImage.Picture := nil;
+    hotkeysImagelist.GetBitmap(PRESSED, hotkeysImage.Picture.Bitmap);
+  end;
+  if cfg.tab = 'rust' then
+  begin
+    rustPressed := true;
+    rustPanel.Visible := true;
+    rustImage.Picture := nil;
+    rustImagelist.GetBitmap(PRESSED, rustImage.Picture.Bitmap);
+  end;
+  if cfg.tab = 'about' then
+  begin
+    aboutPressed := true;
+    aboutPanel.Visible := true;
+    aboutImage.Picture := nil;
+    aboutImagelist.GetBitmap(PRESSED, aboutImage.Picture.Bitmap);
+  end;
+
+  s := VERSION;
+  System.Delete(s, LastDelimiter('.',VERSION), 10 );
+  appNameLabel.Caption := 'StashPic ' + s;
+  Form1.Top := cfg.formTop;
+  Form1.Left := cfg.formLeft;
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  cfg.formTop := Form1.Top;
+  cfg.formLeft := Form1.Left;
+  cfg.save;
 end;
 
 procedure TForm1.WMHotkey( var msg: TWMHotkey );
@@ -578,8 +677,6 @@ begin
       end;
   end;
 
-
-
   finally
     ReleaseDC(hWin,DC);
     FreeAndNil(tmpBmp);
@@ -634,6 +731,7 @@ begin
   end;
 end;
 
+
 procedure TForm1.rustServerEditChange(Sender: TObject);
 var match:TMatch;
     ipPortRegExp : String;
@@ -662,6 +760,105 @@ try
 
 end;
 
+procedure TForm1.settingsImageClick(Sender: TObject);
+begin
+  cfg.tab := 'settings';
+  cfg.save;
+  Reset;
+  settingsPressed := true;
+  settingsPanel.Visible := true;
+  settingsImage.Picture := nil;
+  settingsImagelist.GetBitmap(PRESSED, settingsImage.Picture.Bitmap);
+end;
+
+procedure TForm1.settingsImageMouseEnter(Sender: TObject);
+begin
+  if settingsPressed then exit;
+  settingsImage.Picture := nil;
+  settingsImagelist.GetBitmap(HOVER, settingsImage.Picture.Bitmap);
+end;
+
+procedure TForm1.settingsImageMouseLeave(Sender: TObject);
+begin
+  if settingsPressed then exit;
+  settingsImage.Picture := nil;
+  settingsImagelist.GetBitmap(REST, settingsImage.Picture.Bitmap);
+end;
+
+procedure TForm1.hotkeysImageClick(Sender: TObject);
+begin
+  cfg.tab := 'hotkeys';
+  cfg.save;
+  Reset;
+  hotkeysPressed := true;
+  hotkeysPanel.Visible := true;
+  hotkeysImage.Picture := nil;
+  hotkeysImagelist.GetBitmap(PRESSED, hotkeysImage.Picture.Bitmap);
+end;
+
+procedure TForm1.hotkeysImageMouseEnter(Sender: TObject);
+begin
+  if hotkeysPressed then exit;
+  hotkeysImage.Picture := nil;
+  hotkeysImagelist.GetBitmap(HOVER, hotkeysImage.Picture.Bitmap);
+end;
+
+procedure TForm1.hotkeysImageMouseLeave(Sender: TObject);
+begin
+  if hotkeysPressed then exit;
+  hotkeysImage.Picture := nil;
+  hotkeysImagelist.GetBitmap(REST, hotkeysImage.Picture.Bitmap);
+end;
+
+procedure TForm1.rustImageClick(Sender: TObject);
+begin
+  cfg.tab := 'rust';
+  cfg.save;
+  Reset;
+  rustPressed := true;
+  rustPanel.Visible := true;
+  rustImage.Picture := nil;
+  rustImagelist.GetBitmap(PRESSED, rustImage.Picture.Bitmap);
+end;
+
+procedure TForm1.rustImageMouseEnter(Sender: TObject);
+begin
+  if rustPressed then exit;
+  rustImage.Picture := nil;
+  rustImagelist.GetBitmap(HOVER, rustImage.Picture.Bitmap);
+end;
+
+procedure TForm1.rustImageMouseLeave(Sender: TObject);
+begin
+  if rustPressed then exit;
+  rustImage.Picture := nil;
+  rustImagelist.GetBitmap(REST, rustImage.Picture.Bitmap);
+end;
+
+procedure TForm1.aboutImageClick(Sender: TObject);
+begin
+  cfg.tab := 'about';
+  cfg.save;
+  Reset;
+  aboutPressed := true;
+  aboutPanel.Visible := true;
+  aboutImage.Picture := nil;
+  aboutImagelist.GetBitmap(PRESSED, aboutImage.Picture.Bitmap);
+end;
+
+procedure TForm1.aboutImageMouseEnter(Sender: TObject);
+begin
+  if aboutPressed then exit;
+  aboutImage.Picture := nil;
+  aboutImagelist.GetBitmap(HOVER, aboutImage.Picture.Bitmap);
+end;
+
+procedure TForm1.aboutImageMouseLeave(Sender: TObject);
+begin
+  if aboutPressed then exit;
+  aboutImage.Picture := nil;
+  aboutImagelist.GetBitmap(REST, aboutImage.Picture.Bitmap);
+end;
 
 
 

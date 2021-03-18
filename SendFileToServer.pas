@@ -3,7 +3,7 @@ unit SendFileToServer;
 interface
 
 uses
-  System.Classes, IdMultipartFormData, System.SysUtils, IdHTTP;
+  System.Classes, IdMultipartFormData, System.SysUtils, IdHTTP, mmsystem;
 
 type
   TSendFileToServer = class(TThread)
@@ -35,7 +35,13 @@ begin
   formData.AddFormField('usi', cfg.usi);
   formData.AddFormField('destination', FileDestination.dest);
   response := IdHTTP.Post('http://stashmap.net/map/add/picLoad', formData);
-  form1.memo1.Lines.Add(response);
+  if response <> 'OK' then
+  begin
+    Form1.Caption := 'StashPic - Error:'+response;
+    PlaySoundA('media/error.wav',0, SND_ASYNC);
+  end
+  else Form1.Caption := 'StashPic - screenshot sent';
+  form1.logMemo.Lines.Add(response);
   IdHTTP.Destroy;
   formData.Destroy;
   if not cfg.storeImages then System.SysUtils.DeleteFile(FileDestination.fileName);
