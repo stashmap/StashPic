@@ -35,13 +35,8 @@ begin
   formData.AddFormField('usi', cfg.usi);
   formData.AddFormField('destination', FileDestination.dest);
   response := IdHTTP.Post('http://stashmap.net/map/add/picLoad', formData);
-  if response <> 'OK' then
-  begin
-    Form1.Caption := 'StashPic - Error:'+response;
-    PlaySoundA('media/error.wav',0, SND_ASYNC);
-  end
-  else Form1.Caption := 'StashPic - screenshot sent';
-  form1.logMemo.Lines.Add(response);
+  if response <> 'OK' then PlaySoundA('media/error.wav',0, SND_ASYNC);
+  form1.logMemo.Lines.Add('Sending '+ ExtractFileName(FileDestination.fileName) +' file - ' + response);
   IdHTTP.Destroy;
   formData.Destroy;
   if not cfg.storeImages then System.SysUtils.DeleteFile(FileDestination.fileName);
