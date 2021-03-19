@@ -331,7 +331,6 @@ object Form1: TForm1
       Height = 130
       Lines.Strings = (
         'Logs : ')
-      ScrollBars = ssVertical
       TabOrder = 0
     end
     object autoUpdateCheckBox: TCheckBox

@@ -509,6 +509,7 @@ begin
     aboutPanel.Visible := true;
     aboutImage.Picture := nil;
     aboutImagelist.GetBitmap(PRESSED, aboutImage.Picture.Bitmap);
+    logMemo.ScrollBars := ssVertical; // Bugfix for -> Project raised exception class EOSerror with message 'System Error. Code: 1400" on app exit.
   end;
 
   s := VERSION;
@@ -833,6 +834,7 @@ begin
   aboutPanel.Visible := true;
   aboutImage.Picture := nil;
   aboutImagelist.GetBitmap(PRESSED, aboutImage.Picture.Bitmap);
+  logMemo.ScrollBars := ssVertical; // Bugfix for -> Project raised exception class EOSerror with message 'System Error. Code: 1400" on app exit
 end;
 
 procedure TForm1.aboutImageMouseEnter(Sender: TObject);
