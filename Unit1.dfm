@@ -293,6 +293,15 @@ object Form1: TForm1
       TabOrder = 4
       OnClick = connectToServerButtonClick
     end
+    object runRustButton: TButton
+      Left = 258
+      Top = 6
+      Width = 119
+      Height = 25
+      Caption = 'Run Now'
+      TabOrder = 5
+      OnClick = runRustButtonClick
+    end
   end
   object aboutPanel: TPanel
     Left = 0
@@ -323,6 +332,43 @@ object Form1: TForm1
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+    end
+    object sourceLabel: TLabel
+      Left = 208
+      Top = 14
+      Width = 90
+      Height = 13
+      Cursor = crHandPoint
+      Caption = 'StashPic on GitHub'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlue
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsUnderline]
+      ParentFont = False
+      OnClick = sourceLabelClick
+    end
+    object discordLabel: TLabel
+      Left = 208
+      Top = 33
+      Width = 147
+      Height = 13
+      Cursor = crHandPoint
+      Caption = 'Discord: discord.gg/HmSgK9BT'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlue
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsUnderline]
+      ParentFont = False
+      OnClick = discordLabelClick
+    end
+    object mailLabel: TLabel
+      Left = 208
+      Top = 52
+      Width = 138
+      Height = 13
+      Caption = 'E-mail: stashmap@gmail.com'
     end
     object logMemo: TMemo
       Left = 8

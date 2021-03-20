@@ -73,6 +73,10 @@ end;
     updateTokenEdit: TEdit;
     updateButton: TButton;
     appNameLabel: TLabel;
+    runRustButton: TButton;
+    sourceLabel: TLabel;
+    discordLabel: TLabel;
+    mailLabel: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure Reset();
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -111,6 +115,9 @@ end;
     procedure aboutImageMouseLeave(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure connectToServerButtonClick(Sender: TObject);
+    procedure runRustButtonClick(Sender: TObject);
+    procedure sourceLabelClick(Sender: TObject);
+    procedure discordLabelClick(Sender: TObject);
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -120,7 +127,7 @@ end;
   end;
 
 const
-  VERSION = '0.11.2.0';
+  VERSION = '1.0.0.0';
 
   SCREEN_ALL_AREA = 0;
   SCREEN_CENTER_AREA = 1;
@@ -205,21 +212,20 @@ begin
 end;
 
 procedure TForm1.SendPic();
-var a : TSendFileToServer;
 begin
-if (not fts.Empty) and (fts.ready) then
-a := TSendFileToServer.Create();
+  if (not fts.Empty) and (fts.ready) then
+  TSendFileToServer.Create();
 end;
 
 procedure TForm1.storeImagesCheckboxClick(Sender: TObject);
 begin
-cfg.storeImages := storeImagesCheckbox.Checked;
-cfg.save;
+  cfg.storeImages := storeImagesCheckbox.Checked;
+  cfg.save;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-SendPic;
+  SendPic;
 end;
 
 procedure TForm1.updateButtonClick(Sender: TObject);
@@ -230,15 +236,15 @@ end;
 
 procedure TForm1.updateTokenEditChange(Sender: TObject);
 begin
-cfg.updateToken := updateTokenEdit.Text;
-cfg.save;
+  cfg.updateToken := updateTokenEdit.Text;
+  cfg.save;
 end;
 
 procedure TForm1.scaleBarChange(Sender: TObject);
 begin
-scaleLable.Caption := 'Rust user interface scale : ' + floattostr(scaleBar.Position/100);
-cfg.scale := scaleBar.Position/100;
-cfg.save;
+  scaleLable.Caption := 'Rust user interface scale : ' + floattostr(scaleBar.Position/100);
+  cfg.scale := scaleBar.Position/100;
+  cfg.save;
 end;
 
 procedure TForm1.selectFolderButtonClick(Sender: TObject);
@@ -361,24 +367,29 @@ end;
 procedure TForm1.closeStashPicTimerTimer(Sender: TObject);
 var rustRunning : boolean;
 begin
-rustRunning := false;
-if (processCount('rustclient.exe') > 0) then rustRunning := true;
-if rustRunning then rustHasBeenLaunched := true;
-if (rustHasBeenLaunched and not rustRunning) then Application.Terminate;
+  rustRunning := false;
+  if (processCount('rustclient.exe') > 0) then rustRunning := true;
+  if rustRunning then rustHasBeenLaunched := true;
+  if (rustHasBeenLaunched and not rustRunning) then Application.Terminate;
 end;
 
 procedure TForm1.copyToBufferButtonClick(Sender: TObject);
 begin
-ClipBoard.AsText := usiEdit.Text;
-copyToBufferButton.Caption := 'Copied!';
+  ClipBoard.AsText := usiEdit.Text;
+  copyToBufferButton.Caption := 'Copied!';
+end;
+
+procedure TForm1.discordLabelClick(Sender: TObject);
+begin
+  ShellExecute(0,'open',PChar('https://discord.gg/HmSgK9BT'),nil,nil, SW_SHOWNORMAL);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-UnRegisterHotkey( Handle, 1 );
-UnRegisterHotkey( Handle, 2 );
-UnRegisterHotkey( Handle, 3 );
-UnRegisterHotkey( Handle, 4 );
+  UnRegisterHotkey( Handle, 1 );
+  UnRegisterHotkey( Handle, 2 );
+  UnRegisterHotkey( Handle, 3 );
+  UnRegisterHotkey( Handle, 4 );
 end;
 
 procedure TForm1.Reset();
@@ -680,14 +691,14 @@ end;
 procedure TForm1.launchRustOnStartupAndConnectToServerCheckboxClick(
   Sender: TObject);
 begin
-cfg.launchRustOnStartupAndConnectToServer := launchRustOnStartupAndConnectToServerCheckbox.Checked;
-cfg.save;
+  cfg.launchRustOnStartupAndConnectToServer := launchRustOnStartupAndConnectToServerCheckbox.Checked;
+  cfg.save;
 end;
 
 procedure TForm1.launchRustOnStartupCheckboxClick(Sender: TObject);
 begin
-cfg.launchRustOnStartup := launchRustOnStartupCheckbox.Checked;
-cfg.save;
+  cfg.launchRustOnStartup := launchRustOnStartupCheckbox.Checked;
+  cfg.save;
   if launchRustOnStartupCheckbox.Checked then
   begin
     launchRustOnStartupAndConnectToServerCheckbox.Enabled := true;
@@ -775,6 +786,11 @@ begin
   settingsImagelist.GetBitmap(REST, settingsImage.Picture.Bitmap);
 end;
 
+procedure TForm1.sourceLabelClick(Sender: TObject);
+begin
+    ShellExecute(0,'open',PChar('https://github.com/stashmap/StashPic'),nil,nil, SW_SHOWNORMAL);
+end;
+
 procedure TForm1.hotkeysImageClick(Sender: TObject);
 begin
   cfg.tab := 'hotkeys';
@@ -851,9 +867,14 @@ begin
   aboutImagelist.GetBitmap(REST, aboutImage.Picture.Bitmap);
 end;
 
+procedure TForm1.runRustButtonClick(Sender: TObject);
+begin
+  ShellExecute(0,'open',PChar('steam://rungameid/252490'),nil,nil, SW_SHOWNORMAL);
+end;
+
 procedure TForm1.connectToServerButtonClick(Sender: TObject);
 begin
-ShellExecute(0,'open',PChar('steam://connect/'+cfg.rustServerAddress),nil,nil, SW_SHOWNORMAL);
+  ShellExecute(0,'open',PChar('steam://connect/'+cfg.rustServerAddress),nil,nil, SW_SHOWNORMAL);
 end;
 
 end.
