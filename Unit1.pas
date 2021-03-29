@@ -127,7 +127,7 @@ end;
   end;
 
 const
-  VERSION = '1.0.0.0';
+  VERSION = '1.0.1.0';
 
   SCREEN_ALL_AREA = 0;
   SCREEN_CENTER_AREA = 1;
@@ -594,10 +594,9 @@ var
   fileName: string;
   currentMonthFolder : string;
 begin
-  hWin := 0;
-  //active window
-  hWin := GetForegroundWindow;
-  dc := GetWindowDC(hWin);
+  hWin := GetDesktopWindow;
+  dc := GetDC(hWin);
+
   GetWindowRect(hWin,r);
   w := r.Right - r.Left;
   h := r.Bottom - r.Top;
