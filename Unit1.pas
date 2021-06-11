@@ -12,7 +12,7 @@ type
 
   TFleToDestination = record
     fileName : string;
-    dest : string;
+    dest : integer;
   end;
 
   TFilesToSend = class(TObject)
@@ -22,7 +22,7 @@ type
 
 
     public
-      procedure Add( fileName, dest : string);
+      procedure Add( fileName:string; dest : integer);
       function Get() : TFleToDestination;
       function Empty() : boolean;
     protected
@@ -77,6 +77,7 @@ end;
     sourceLabel: TLabel;
     discordLabel: TLabel;
     mailLabel: TLabel;
+    stashmapLinkLabel: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure Reset();
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -118,6 +119,7 @@ end;
     procedure runRustButtonClick(Sender: TObject);
     procedure sourceLabelClick(Sender: TObject);
     procedure discordLabelClick(Sender: TObject);
+    procedure stashmapLinkLabelClick(Sender: TObject);
   private
   procedure WMHotkey( var msg: TWMHotkey ); message WM_HOTKEY;
   function GetScreenShot(area, quality, fileType:integer):string;
@@ -127,11 +129,12 @@ end;
   end;
 
 const
-  VERSION = '1.0.1.0';
+  VERSION = '1.0.2.0';
 
   SCREEN_ALL_AREA = 0;
   SCREEN_CENTER_AREA = 1;
   SCREEN_STASH_AREA = 2;
+  SCREEN_ALL_AREA_AS_MAP_PART = 3;
 
   JPG_FILE = 0;
   PNG_FILE = 1;
@@ -157,12 +160,13 @@ var
   hotkeysPressed : boolean = false;
   rustPressed : boolean = false;
   aboutPressed : boolean = false;
+  haveShutterSound : boolean = false;
 
 implementation
 uses SendFileToServer, editHotkey;
 {$R *.dfm}
 
-procedure TFilesToSend.Add(fileName, dest : string);
+procedure TFilesToSend.Add(fileName: string; dest : integer);
 begin
   count := Length(list)+1;
   SetLength(list, count);
@@ -215,6 +219,11 @@ procedure TForm1.SendPic();
 begin
   if (not fts.Empty) and (fts.ready) then
   TSendFileToServer.Create();
+end;
+
+procedure TForm1.stashmapLinkLabelClick(Sender: TObject);
+begin
+    ShellExecute(0,'open',PChar('https://stashmap.net/usi/'+cfg.usi),nil,nil, SW_SHOWNORMAL);
 end;
 
 procedure TForm1.storeImagesCheckboxClick(Sender: TObject);
@@ -381,7 +390,7 @@ end;
 
 procedure TForm1.discordLabelClick(Sender: TObject);
 begin
-  ShellExecute(0,'open',PChar('https://discord.gg/HmSgK9BT'),nil,nil, SW_SHOWNORMAL);
+  ShellExecute(0,'open',PChar('https://discord.gg/jvWCFBaQBA'),nil,nil, SW_SHOWNORMAL);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -467,8 +476,6 @@ begin
 
 
 
-  stashPic := 'stash_picture';
-  mapPartPic := 'map_part_picture';
   fts := TFilesToSend.Create;
   fts.ready := true;
   if not registerHotkeyByCode(1, cfg.hotkeyCaptureFullscreenCode) then
@@ -523,6 +530,8 @@ begin
     logMemo.ScrollBars := ssVertical; // Bugfix for -> Project raised exception class EOSerror with message 'System Error. Code: 1400" on app exit.
   end;
 
+  haveShutterSound := FileExists( baseDir + '/media/shutter.wav');
+
   s := VERSION;
   System.Delete(s, LastDelimiter('.',VERSION), 10 );
   appNameLabel.Caption := 'StashPic ' + s;
@@ -542,23 +551,23 @@ procedure TForm1.WMHotkey( var msg: TWMHotkey );
 begin
   if msg.hotkey = 1 then
   begin
-    fts.Add(GetScreenShot(SCREEN_ALL_AREA, 50, JPG_FILE), stashPic);
-    PlaySoundA('media/shutter.wav',0, SND_ASYNC);
+    fts.Add(GetScreenShot(SCREEN_ALL_AREA, 50, JPG_FILE), SCREEN_ALL_AREA);
+    if haveShutterSound then PlaySoundA('media/shutter.wav',0, SND_ASYNC);
   end;
   if msg.hotkey = 2 then
   begin
-    fts.Add(GetScreenShot(SCREEN_CENTER_AREA, 60, JPG_FILE), stashPic);
-    PlaySoundA('media/shutter.wav',0, SND_ASYNC);
+    fts.Add(GetScreenShot(SCREEN_CENTER_AREA, 60, JPG_FILE), SCREEN_CENTER_AREA);
+    if haveShutterSound then PlaySoundA('media/shutter.wav',0, SND_ASYNC);
   end;
   if msg.hotkey = 3 then
   begin
-    fts.Add(GetScreenShot(SCREEN_STASH_AREA, 90, JPG_FILE), stashPic);
-    PlaySoundA('media/shutter.wav',0, SND_ASYNC);
+    fts.Add(GetScreenShot(SCREEN_STASH_AREA, 90, JPG_FILE), SCREEN_STASH_AREA);
+    if haveShutterSound then PlaySoundA('media/shutter.wav',0, SND_ASYNC);
   end;
   if msg.hotkey = 4 then
   begin
-    fts.Add(GetScreenShot(SCREEN_ALL_AREA, 1, PNG_FILE), mapPartPic);
-    PlaySoundA('media/shutter.wav',0, SND_ASYNC);
+    fts.Add(GetScreenShot(SCREEN_ALL_AREA, 1, PNG_FILE), SCREEN_ALL_AREA_AS_MAP_PART);
+    if haveShutterSound then PlaySoundA('media/shutter.wav',0, SND_ASYNC);
   end;
 end;
 

@@ -33,7 +33,7 @@ begin
   if FileDestination.fileName = '' then exit;
   formData.AddFile('fileToUpload', FileDestination.fileName, 'application/octet-stream');
   formData.AddFormField('usi', cfg.usi);
-  formData.AddFormField('destination', FileDestination.dest);
+  formData.AddFormField('destination', inttostr(FileDestination.dest));
   response := IdHTTP.Post('http://stashmap.net/map/add/picLoad', formData);
   if response <> 'OK' then PlaySoundA('media/error.wav',0, SND_ASYNC);
   form1.logMemo.Lines.Add('Sending '+ ExtractFileName(FileDestination.fileName) +' file - ' + response);

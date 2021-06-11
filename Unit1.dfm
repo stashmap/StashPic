@@ -80,30 +80,54 @@ object Form1: TForm1
     object Label1: TLabel
       Left = 8
       Top = 16
-      Width = 88
-      Height = 13
-      Caption = 'Take a screenshot'
+      Width = 130
+      Height = 16
+      Caption = 'Take a full screen shot'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
     end
     object Label2: TLabel
       Left = 8
-      Top = 48
-      Width = 221
-      Height = 13
-      Caption = 'Take a screenshot of the center of the screen'
+      Top = 46
+      Width = 96
+      Height = 16
+      Caption = 'Take a map shot'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
     end
     object Label3: TLabel
       Left = 8
-      Top = 80
-      Width = 174
-      Height = 13
-      Caption = 'Take a screenshot of the stash area'
+      Top = 76
+      Width = 165
+      Height = 16
+      Caption = 'Take a small stash slots shot'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
     end
     object Label4: TLabel
       Left = 8
-      Top = 112
-      Width = 148
-      Height = 13
-      Caption = 'Take a screenshot as map part'
+      Top = 106
+      Width = 199
+      Height = 16
+      Caption = 'Take a fullscreen shot as map part'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
     end
     object editHotkey1Button: TButton
       Left = 258
@@ -111,6 +135,12 @@ object Form1: TForm1
       Width = 121
       Height = 25
       Caption = 'editHotkey1Button'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
       OnClick = editHotkey1ButtonClick
     end
@@ -120,6 +150,12 @@ object Form1: TForm1
       Width = 121
       Height = 25
       Caption = 'editHotkey2Button'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 1
       OnClick = editHotkey2ButtonClick
     end
@@ -129,6 +165,12 @@ object Form1: TForm1
       Width = 121
       Height = 25
       Caption = 'editHotkey3Button'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 2
       OnClick = editHotkey3ButtonClick
     end
@@ -138,6 +180,12 @@ object Form1: TForm1
       Width = 121
       Height = 25
       Caption = 'editHotkey4Button'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 3
       OnClick = editHotkey4ButtonClick
     end
@@ -154,22 +202,55 @@ object Form1: TForm1
     object usiLabel: TLabel
       Left = 8
       Top = 6
-      Width = 52
-      Height = 13
+      Width = 62
+      Height = 16
       Caption = 'Sender ID:'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
     end
     object scaleLable: TLabel
       Left = 8
       Top = 84
-      Width = 126
-      Height = 13
+      Width = 150
+      Height = 16
       Caption = 'Rust user interface scale :'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object stashmapLinkLabel: TLabel
+      Left = 224
+      Top = 28
+      Width = 145
+      Height = 16
+      Cursor = crHandPoint
+      Caption = 'Screehshots at StashMap'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlue
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = [fsUnderline]
+      ParentFont = False
+      OnClick = stashmapLinkLabelClick
     end
     object usiEdit: TEdit
       Left = 8
       Top = 25
       Width = 193
-      Height = 21
+      Height = 24
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       ReadOnly = True
       TabOrder = 0
       Text = 'usiEdit'
@@ -180,6 +261,12 @@ object Form1: TForm1
       Width = 81
       Height = 25
       Caption = 'Regenerate'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 1
       OnClick = regenerateButtonClick
     end
@@ -189,6 +276,12 @@ object Form1: TForm1
       Width = 106
       Height = 25
       Caption = 'Copy to clipboard'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 2
       OnClick = copyToBufferButtonClick
     end
@@ -212,6 +305,12 @@ object Form1: TForm1
       Width = 83
       Height = 25
       Caption = 'Select folder'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 4
       OnClick = selectFolderButtonClick
     end
@@ -221,6 +320,12 @@ object Form1: TForm1
       Width = 82
       Height = 25
       Caption = 'Open folder'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 5
       OnClick = openFolderButtonClick
     end
@@ -229,7 +334,13 @@ object Form1: TForm1
       Top = 134
       Width = 185
       Height = 17
-      Caption = 'Save a copy of the screenshot to :'
+      Caption = 'Save a copy of the shots to :'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 6
       OnClick = storeImagesCheckboxClick
     end
@@ -247,27 +358,45 @@ object Form1: TForm1
     object launchRustOnStartupCheckbox: TCheckBox
       Left = 8
       Top = 6
-      Width = 126
+      Width = 142
       Height = 17
       Caption = 'Run Rust on startup'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
       OnClick = launchRustOnStartupCheckboxClick
     end
     object launchRustOnStartupAndConnectToServerCheckbox: TCheckBox
       Left = 8
       Top = 29
-      Width = 209
+      Width = 233
       Height = 17
       Caption = 'Run Rust on startup and connect to :'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 1
       OnClick = launchRustOnStartupAndConnectToServerCheckboxClick
     end
     object closeStashPicOnRustCloseCheckbox: TCheckBox
       Left = 8
-      Top = 79
+      Top = 82
       Width = 217
       Height = 17
       Caption = 'Close StashPic when closing Rust'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 2
       OnClick = closeStashPicOnRustCloseCheckboxClick
     end
@@ -275,9 +404,15 @@ object Form1: TForm1
       Left = 8
       Top = 52
       Width = 244
-      Height = 21
+      Height = 24
       Hint = 'Incorrect address1'
       Color = clWhite
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       ParentShowHint = False
       ShowHint = True
       TabOrder = 3
@@ -286,19 +421,31 @@ object Form1: TForm1
     end
     object connectToServerButton: TButton
       Left = 258
-      Top = 48
+      Top = 51
       Width = 121
       Height = 25
       Caption = 'Connect now'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 4
       OnClick = connectToServerButtonClick
     end
     object runRustButton: TButton
       Left = 258
-      Top = 6
+      Top = 3
       Width = 119
       Height = 25
       Caption = 'Run Now'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 5
       OnClick = runRustButtonClick
     end
@@ -351,10 +498,10 @@ object Form1: TForm1
     object discordLabel: TLabel
       Left = 208
       Top = 33
-      Width = 147
+      Width = 161
       Height = 13
       Cursor = crHandPoint
-      Caption = 'Discord: discord.gg/HmSgK9BT'
+      Caption = 'Discord: discord.gg/jvWCFBaQBA'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlue
       Font.Height = -11
@@ -376,7 +523,7 @@ object Form1: TForm1
       Width = 371
       Height = 130
       Lines.Strings = (
-        'Logs : ')
+        'Screenshot sending log : ')
       TabOrder = 0
     end
     object autoUpdateCheckBox: TCheckBox
@@ -409,21 +556,21 @@ object Form1: TForm1
   object Timer1: TTimer
     Interval = 50
     OnTimer = Timer1Timer
-    Left = 248
-    Top = 135
+    Left = 240
+    Top = 15
   end
   object closeStashPicTimer: TTimer
     Enabled = False
     Interval = 3000
     OnTimer = closeStashPicTimerTimer
-    Left = 288
-    Top = 135
+    Left = 272
+    Top = 7
   end
   object settingsImageList: TImageList
     Height = 53
     Width = 64
-    Left = 240
-    Top = 80
+    Left = 248
+    Top = 16
     Bitmap = {
       494C010103000800040040003500FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000000001000035000000010020000000000000D4
@@ -2185,7 +2332,7 @@ object Form1: TForm1
     Height = 53
     Width = 64
     Left = 240
-    Top = 80
+    Top = 16
     Bitmap = {
       494C010103000800040040003500FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000000001000035000000010020000000000000D4
@@ -3947,7 +4094,6 @@ object Form1: TForm1
     Height = 53
     Width = 64
     Left = 240
-    Top = 80
     Bitmap = {
       494C010103000800040040003500FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000000001000035000000010020000000000000D4
@@ -5708,8 +5854,8 @@ object Form1: TForm1
   object rustImageList: TImageList
     Height = 53
     Width = 64
-    Left = 240
-    Top = 80
+    Left = 232
+    Top = 8
     Bitmap = {
       494C010103000800040040003500FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000000001000035000000010020000000000000D4
