@@ -459,21 +459,47 @@ begin
   autoUpdateCheckBox.Checked := cfg.automaticUpdate;
   updateTokenEdit.Text := cfg.updateToken;
 
+//  if cfg.automaticUpdate then
+//  begin
+//    IdHTTP := TIdHTTP.Create;
+//    formData := TIdMultiPartFormDataStream.Create;
+//    formData.AddFormField('version', VERSION);
+//    formData.AddFormField('updateToken', cfg.updateToken);
+//    if IdHTTP.Post('http://stashmap.net/stashpic/update/check', formData) = 'new_version_available' then
+//    begin
+//      ShellExecute(0, 'open', Pchar( baseDir + '\Update.exe'), nil, nil, SW_SHOWNORMAL) ;
+//      Application.Terminate;
+//    end;
+//    IdHTTP.Destroy;
+//    formData.Destroy;
+//  end;
+
   if cfg.automaticUpdate then
   begin
-    IdHTTP := TIdHTTP.Create;
-    formData := TIdMultiPartFormDataStream.Create;
-    formData.AddFormField('version', VERSION);
-    formData.AddFormField('updateToken', cfg.updateToken);
-    if IdHTTP.Post('http://stashmap.net/stashpic/update/check', formData) = 'new_version_available' then
-    begin
-      ShellExecute(0, 'open', Pchar( baseDir + '\Update.exe'), nil, nil, SW_SHOWNORMAL) ;
-      Application.Terminate;
-    end;
-    IdHTTP.Destroy;
-    formData.Destroy;
-  end;
 
+    try
+      IdHTTP := TIdHTTP.Create;
+      formData := TIdMultiPartFormDataStream.Create;
+      formData.AddFormField('version', VERSION);
+      formData.AddFormField('updateToken', cfg.updateToken);
+      if IdHTTP.Post('http://stashmap.net/stashpic/update/check', formData) = 'new_version_available' then
+      begin
+        ShellExecute(0, 'open', Pchar( baseDir + '\Update.exe'), nil, nil, SW_SHOWNORMAL) ;
+        Application.Terminate;
+      end;
+      IdHTTP.Destroy;
+      formData.Destroy;
+    except
+      on E: EIdHTTPProtocolException do
+      begin
+        halt;
+      end;
+      on E: Exception do begin
+          // do something else
+      end;
+    end;
+
+  end;
 
 
   fts := TFilesToSend.Create;
